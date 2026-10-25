@@ -18,12 +18,29 @@ import { QuickViewModal } from './components/QuickViewModal';
 import { WhatsAppChatWidget } from './components/WhatsAppChatWidget';
 import { CategoriesMenu } from './components/CategoriesMenu';
 import { ShowroomsModal, AccountModal } from './components/InfoModals';
+import { VendorDashboard } from './components/vendor/VendorDashboard';
 import { INITIAL_PRODUCTS } from './data/products';
+import {
+  INITIAL_VENDOR_ORDERS,
+  INITIAL_SHOWROOM_STOCKS,
+  INITIAL_VENDOR_PAYOUTS,
+  INITIAL_WARRANTY_CLAIMS
+} from './data/vendorData';
 import { Product, FilterState, CartItem } from './types';
+import { VendorOrder, ShowroomStockAllocation, VendorPayout, WarrantyClaim } from './types/vendor';
 
 export default function App() {
-  // Products dataset
-  const [products] = useState<Product[]>(INITIAL_PRODUCTS);
+  // Mode Switcher: Storefront (Customer View) or Vendor Dashboard (Partner Hub)
+  const [viewMode, setViewMode] = useState<'storefront' | 'vendor'>('vendor'); // open to vendor dashboard or toggle
+
+  // Products dataset (shared between Storefront & Vendor Hub)
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+
+  // Vendor Data State
+  const [vendorOrders, setVendorOrders] = useState<VendorOrder[]>(INITIAL_VENDOR_ORDERS);
+  const [showroomStocks, setShowroomStocks] = useState<ShowroomStockAllocation[]>(INITIAL_SHOWROOM_STOCKS);
+  const [vendorPayouts, setVendorPayouts] = useState<VendorPayout[]>(INITIAL_VENDOR_PAYOUTS);
+  const [warrantyClaims, setWarrantyClaims] = useState<WarrantyClaim[]>(INITIAL_WARRANTY_CLAIMS);
 
   // Filter State initialized matching the screenshot exactly
   const [filterState, setFilterState] = useState<FilterState>({
@@ -89,7 +106,7 @@ export default function App() {
     return cartItems.reduce((acc, item) => acc + item.quantity, 0);
   }, [cartItems]);
 
-  // Filter products
+  // Filter products for storefront
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       // 1. Search Query
@@ -123,8 +140,6 @@ export default function App() {
 
       // 5. Discounted Only toggle
       if (filterState.discountedOnly && !product.hasDiscount) {
-        // In the design, all 8 initial showcase phones are displayed even with the switch turned on.
-        // We allow featured items or check hasDiscount
         if (!product.hasDiscount && !product.isPopular && !product.isBestValue) {
           return false;
         }
@@ -139,7 +154,7 @@ export default function App() {
     });
   }, [products, filterState]);
 
-  // Handlers
+  // Storefront Handlers
   const handleAddToCart = (product: Product, quantity = 1) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
@@ -203,161 +218,264 @@ export default function App() {
     });
   };
 
+  // Vendor Management Handlers
+  const handleAddProduct = (newProduct: Product) => {
+    setProducts((prev) => [newProduct, ...prev]);
+  };
+
+  const handleUpdateProductPrice = (productId: string, newPrice: number) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === productId ? { ...p, price: newPrice } : p))
+    );
+  };
+
+  const handleDeleteProduct = (productId: string) => {
+    if (confirm('Are you sure you want to remove this smartphone listing?')) {
+      setProducts((prev) => prev.filter((p) => p.id !== productId));
+    }
+  };
+
+  const handleUpdateOrderStatus = (orderId: string, status: VendorOrder['status']) => {
+    setVendorOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, status } : o))
+    );
+  };
+
+  const handleTransferStock = (fromId: string, toId: string, amount: number) => {
+    setShowroomStocks((prev) =>
+      prev.map((s) => {
+        if (s.branchId === fromId) {
+          return { ...s, stockCount: Math.max(0, s.stockCount - amount) };
+        }
+        if (s.branchId === toId) {
+          return { ...s, stockCount: s.stockCount + amount };
+        }
+        return s;
+      })
+    );
+  };
+
+  const handleRequestPayout = (payout: VendorPayout) => {
+    setVendorPayouts((prev) => [payout, ...prev]);
+  };
+
+  const handleViewProductOnStorefront = (product: Product) => {
+    setViewMode('storefront');
+    setQuickViewProduct(product);
+  };
+
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans flex flex-col antialiased selection:bg-emerald-100 selection:text-emerald-900">
-      {/* 1. Header Top Notification Bar */}
-      <HeaderTopBar
-        onOpenHelp={() => setShowroomsOpen(true)}
-        onOpenWhatsApp={() => {
-          const chatBtn = document.querySelector('button[title="Chat with Franko Desk"]') as HTMLButtonElement;
-          chatBtn?.click();
-        }}
-      />
+      {/* View Mode Ribbon */}
+      <div className="bg-slate-900 text-white text-[11px] py-1.5 px-4 sm:px-6 lg:px-8 border-b border-slate-800 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-medium text-slate-300">
+            Franko Trading Ecosystem: <strong className="text-white">{viewMode === 'vendor' ? 'Vendor Central Partner Portal' : 'Customer Welcome Storefront'}</strong>
+          </span>
+        </div>
 
-      {/* 2. Main Navigation Bar with Logo, Categories, Search, Cart */}
-      <div className="relative">
-        <MainNavbar
-          onToggleCategories={() => setCategoriesOpen(!categoriesOpen)}
-          categoriesOpen={categoriesOpen}
-          searchQuery={filterState.searchQuery}
-          onSearchChange={(q) => setFilterState((prev) => ({ ...prev, searchQuery: q }))}
-          onOpenCart={() => setCartOpen(true)}
-          onOpenWishlist={() => {
-            if (wishlistIds.length === 0) {
-              alert('Your wishlist is currently empty. Click the heart icon on any smartphone to add it!');
-            } else {
-              alert(`You have ${wishlistIds.length} item(s) saved in your wishlist!`);
-            }
-          }}
-          onOpenAccount={() => setAccountOpen(true)}
-          cartCount={cartCount}
-          cartSubtotal={cartSubtotal}
-          wishlistCount={wishlistIds.length}
-          products={products}
-          onSelectProduct={(p) => setQuickViewProduct(p)}
-          onNavigateSection={(sec) => {
-            if (sec === 'shops') setShowroomsOpen(true);
-            if (sec === 'deals') {
-              setFilterState((prev) => ({ ...prev, discountedOnly: true }));
-            }
-            if (sec === 'about') {
-              window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }
-          }}
-        />
-
-        {/* Dropdown Menu when Categories clicked */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <CategoriesMenu
-            isOpen={categoriesOpen}
-            onClose={() => setCategoriesOpen(false)}
-            onSelectCategory={(catId) => {
-              setActiveTabCategory(catId);
-              setCategoriesOpen(false);
-            }}
-          />
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setViewMode('storefront')}
+            className={`px-2.5 py-0.5 rounded-md font-bold transition-all cursor-pointer ${
+              viewMode === 'storefront'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            Storefront
+          </button>
+          <span className="text-slate-600">/</span>
+          <button
+            onClick={() => setViewMode('vendor')}
+            className={`px-2.5 py-0.5 rounded-md font-bold transition-all cursor-pointer ${
+              viewMode === 'vendor'
+                ? 'bg-[#073c2c] text-white shadow-xs'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            Vendor Dashboard
+          </button>
         </div>
       </div>
 
-      {/* 3. Sub-Navbar category links & trust badges */}
-      <SubNavbar
-        activeCategory={activeTabCategory}
-        onSelectCategory={(catId) => setActiveTabCategory(catId)}
-        onOpenWarranty={() => setShowroomsOpen(true)}
-        onOpenDeals={() => setFilterState((prev) => ({ ...prev, discountedOnly: !prev.discountedOnly }))}
-      />
-
-      {/* 4. Main Body Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 w-full flex-1">
-        {/* Category Header Banner with Brand Pills & Active Filters */}
-        <CategoryHeader
-          selectedBrand={filterState.selectedBrand}
-          onSelectBrand={(brandKey) =>
-            setFilterState((prev) => ({ ...prev, selectedBrand: brandKey }))
-          }
-          activeFilters={activeFilterTags}
-          onRemoveFilter={handleRemoveActiveFilter}
-          onResetFilters={handleResetAllFilters}
-          totalProductsCount={92}
+      {viewMode === 'vendor' ? (
+        /* VENDOR DASHBOARD VIEW */
+        <VendorDashboard
+          products={products}
+          orders={vendorOrders}
+          showrooms={showroomStocks}
+          payouts={vendorPayouts}
+          warrantyClaims={warrantyClaims}
+          onBackToStorefront={() => setViewMode('storefront')}
+          onAddProduct={handleAddProduct}
+          onUpdateProductPrice={handleUpdateProductPrice}
+          onDeleteProduct={handleDeleteProduct}
+          onUpdateOrderStatus={handleUpdateOrderStatus}
+          onTransferStock={handleTransferStock}
+          onRequestPayout={handleRequestPayout}
+          onViewProductOnStorefront={handleViewProductOnStorefront}
         />
-
-        {/* 2-Column Catalog Layout: Left Sidebar Filters + Right Product Grid */}
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
-          {/* Left Sidebar */}
-          <SidebarFilters
-            filterState={filterState}
-            onFilterChange={(updates) => setFilterState((prev) => ({ ...prev, ...updates }))}
-            onApplyPrice={() => setCurrentPage(1)}
-          />
-
-          {/* Right Product Grid */}
-          <ProductGrid
-            products={filteredProducts.slice((currentPage - 1) * 8, currentPage * 8)}
-            totalFound={filteredProducts.length > 0 ? 92 : 0}
-            currentPage={currentPage}
-            onPageChange={(page) => {
-              setCurrentPage(page);
-              window.scrollTo({ top: 300, behavior: 'smooth' });
+      ) : (
+        /* STOREFRONT (WELCOME / CUSTOMER CATALOG) VIEW */
+        <>
+          {/* 1. Header Top Notification Bar */}
+          <HeaderTopBar
+            onOpenHelp={() => setShowroomsOpen(true)}
+            onOpenWhatsApp={() => {
+              const chatBtn = document.querySelector('button[title="Chat with Franko Desk"]') as HTMLButtonElement;
+              chatBtn?.click();
             }}
-            sortBy={filterState.sortBy}
-            onSortChange={(sort) => setFilterState((prev) => ({ ...prev, sortBy: sort }))}
-            onAddToCart={handleAddToCart}
-            onToggleWishlist={handleToggleWishlist}
-            wishlistIds={wishlistIds}
-            onQuickView={(product) => setQuickViewProduct(product)}
           />
-        </div>
 
-        {/* 4-Feature Value Proposition Cards */}
-        <ValuePropositionCards />
+          {/* 2. Main Navigation Bar with Logo, Categories, Search, Cart */}
+          <div className="relative">
+            <MainNavbar
+              onToggleCategories={() => setCategoriesOpen(!categoriesOpen)}
+              categoriesOpen={categoriesOpen}
+              searchQuery={filterState.searchQuery}
+              onSearchChange={(q) => setFilterState((prev) => ({ ...prev, searchQuery: q }))}
+              onOpenCart={() => setCartOpen(true)}
+              onOpenWishlist={() => {
+                if (wishlistIds.length === 0) {
+                  alert('Your wishlist is currently empty. Click the heart icon on any smartphone to add it!');
+                } else {
+                  alert(`You have ${wishlistIds.length} item(s) saved in your wishlist!`);
+                }
+              }}
+              onOpenAccount={() => setAccountOpen(true)}
+              onOpenVendorPortal={() => setViewMode('vendor')}
+              cartCount={cartCount}
+              cartSubtotal={cartSubtotal}
+              wishlistCount={wishlistIds.length}
+              products={products}
+              onSelectProduct={(p) => setQuickViewProduct(p)}
+              onNavigateSection={(sec) => {
+                if (sec === 'shops') setShowroomsOpen(true);
+                if (sec === 'deals') {
+                  setFilterState((prev) => ({ ...prev, discountedOnly: true }));
+                }
+                if (sec === 'about') {
+                  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                }
+              }}
+            />
 
-        {/* Newsletter Signup Banner */}
-        <NewsletterBanner />
-      </main>
+            {/* Dropdown Menu when Categories clicked */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+              <CategoriesMenu
+                isOpen={categoriesOpen}
+                onClose={() => setCategoriesOpen(false)}
+                onSelectCategory={(catId) => {
+                  setActiveTabCategory(catId);
+                  setCategoriesOpen(false);
+                }}
+              />
+            </div>
+          </div>
 
-      {/* 5. Deep Forest Green Footer */}
-      <Footer
-        onOpenShowrooms={() => setShowroomsOpen(true)}
-        onOpenHelp={() => setShowroomsOpen(true)}
-        onOpenWarranty={() => setShowroomsOpen(true)}
-        onOpenDeliveryTrack={() => {
-          alert('Franko Delivery Tracking: Enter your receipt or order number FT-GH-XXXX to track express rider dispatch across Ghana.');
-        }}
-      />
+          {/* 3. Sub-Navbar category links & trust badges */}
+          <SubNavbar
+            activeCategory={activeTabCategory}
+            onSelectCategory={(catId) => setActiveTabCategory(catId)}
+            onOpenWarranty={() => setShowroomsOpen(true)}
+            onOpenDeals={() => setFilterState((prev) => ({ ...prev, discountedOnly: !prev.discountedOnly }))}
+          />
 
-      {/* 6. Floating Interactive WhatsApp Chat Desk */}
-      <WhatsAppChatWidget />
+          {/* 4. Main Body Content Area */}
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 w-full flex-1">
+            {/* Category Header Banner with Brand Pills & Active Filters */}
+            <CategoryHeader
+              selectedBrand={filterState.selectedBrand}
+              onSelectBrand={(brandKey) =>
+                setFilterState((prev) => ({ ...prev, selectedBrand: brandKey }))
+              }
+              activeFilters={activeFilterTags}
+              onRemoveFilter={handleRemoveActiveFilter}
+              onResetFilters={handleResetAllFilters}
+              totalProductsCount={products.length >= 8 ? 92 : products.length}
+            />
 
-      {/* 7. Slide-over Cart Drawer */}
-      <CartDrawer
-        isOpen={cartOpen}
-        onClose={() => setCartOpen(false)}
-        items={cartItems}
-        onUpdateQuantity={handleUpdateCartQuantity}
-        onRemoveItem={handleRemoveCartItem}
-        subtotal={cartSubtotal}
-      />
+            {/* 2-Column Catalog Layout: Left Sidebar Filters + Right Product Grid */}
+            <div className="flex flex-col lg:flex-row gap-6 items-start">
+              {/* Left Sidebar */}
+              <SidebarFilters
+                filterState={filterState}
+                onFilterChange={(updates) => setFilterState((prev) => ({ ...prev, ...updates }))}
+                onApplyPrice={() => setCurrentPage(1)}
+              />
 
-      {/* 8. Quick View Smartphone Modal */}
-      <QuickViewModal
-        product={quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-        onAddToCart={(prod, qty) => handleAddToCart(prod, qty)}
-        onToggleWishlist={handleToggleWishlist}
-        isWishlisted={quickViewProduct ? wishlistIds.includes(quickViewProduct.id) : false}
-      />
+              {/* Right Product Grid */}
+              <ProductGrid
+                products={filteredProducts.slice((currentPage - 1) * 8, currentPage * 8)}
+                totalFound={filteredProducts.length > 0 ? (products.length >= 8 ? 92 : products.length) : 0}
+                currentPage={currentPage}
+                onPageChange={(page) => {
+                  setCurrentPage(page);
+                  window.scrollTo({ top: 300, behavior: 'smooth' });
+                }}
+                sortBy={filterState.sortBy}
+                onSortChange={(sort) => setFilterState((prev) => ({ ...prev, sortBy: sort }))}
+                onAddToCart={handleAddToCart}
+                onToggleWishlist={handleToggleWishlist}
+                wishlistIds={wishlistIds}
+                onQuickView={(product) => setQuickViewProduct(product)}
+              />
+            </div>
 
-      {/* 9. Showrooms Directory Modal */}
-      <ShowroomsModal
-        isOpen={showroomsOpen}
-        onClose={() => setShowroomsOpen(false)}
-      />
+            {/* 4-Feature Value Proposition Cards */}
+            <ValuePropositionCards />
 
-      {/* 10. Account Sign In Modal */}
-      <AccountModal
-        isOpen={accountOpen}
-        onClose={() => setAccountOpen(false)}
-      />
+            {/* Newsletter Signup Banner */}
+            <NewsletterBanner />
+          </main>
+
+          {/* 5. Deep Forest Green Footer */}
+          <Footer
+            onOpenShowrooms={() => setShowroomsOpen(true)}
+            onOpenHelp={() => setShowroomsOpen(true)}
+            onOpenWarranty={() => setShowroomsOpen(true)}
+            onOpenDeliveryTrack={() => {
+              alert('Franko Delivery Tracking: Enter your receipt or order number FT-GH-XXXX to track express rider dispatch across Ghana.');
+            }}
+          />
+
+          {/* 6. Floating Interactive WhatsApp Chat Desk */}
+          <WhatsAppChatWidget />
+
+          {/* 7. Slide-over Cart Drawer */}
+          <CartDrawer
+            isOpen={cartOpen}
+            onClose={() => setCartOpen(false)}
+            items={cartItems}
+            onUpdateQuantity={handleUpdateCartQuantity}
+            onRemoveItem={handleRemoveCartItem}
+            subtotal={cartSubtotal}
+          />
+
+          {/* 8. Quick View Smartphone Modal */}
+          <QuickViewModal
+            product={quickViewProduct}
+            onClose={() => setQuickViewProduct(null)}
+            onAddToCart={(prod, qty) => handleAddToCart(prod, qty)}
+            onToggleWishlist={handleToggleWishlist}
+            isWishlisted={quickViewProduct ? wishlistIds.includes(quickViewProduct.id) : false}
+          />
+
+          {/* 9. Showrooms Directory Modal */}
+          <ShowroomsModal
+            isOpen={showroomsOpen}
+            onClose={() => setShowroomsOpen(false)}
+          />
+
+          {/* 10. Account Sign In Modal */}
+          <AccountModal
+            isOpen={accountOpen}
+            onClose={() => setAccountOpen(false)}
+          />
+        </>
+      )}
     </div>
   );
 }

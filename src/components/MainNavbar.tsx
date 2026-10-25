@@ -11,6 +11,7 @@ interface MainNavbarProps {
   onOpenCart: () => void;
   onOpenWishlist: () => void;
   onOpenAccount: () => void;
+  onOpenVendorPortal: () => void;
   cartCount: number;
   cartSubtotal: number;
   wishlistCount: number;
@@ -27,6 +28,7 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
   onOpenCart,
   onOpenWishlist,
   onOpenAccount,
+  onOpenVendorPortal,
   cartCount,
   cartSubtotal,
   wishlistCount,
@@ -156,10 +158,24 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
               <span>Live Deals</span>
               <span className="w-2 h-2 rounded-full bg-[#dc2626]" />
             </button>
+            <button
+              onClick={onOpenVendorPortal}
+              className="px-2.5 py-1 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+              <span>Vendor Hub</span>
+            </button>
           </nav>
 
-          {/* 5. Right Action Elements: Account, Wishlist, Cart */}
-          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+          {/* 5. Right Action Elements: Vendor Hub (mobile/tablet), Account, Wishlist, Cart */}
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <button
+              onClick={onOpenVendorPortal}
+              className="xl:hidden px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition-colors cursor-pointer flex items-center gap-1"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+              <span>Vendor</span>
+            </button>
             {/* Account */}
             <button
               onClick={onOpenAccount}
