@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ArrowUpDown, ShieldCheck } from 'lucide-react';
+import { ChevronDown, ArrowUpDown, ShieldCheck, Smartphone, Laptop, Tv, Home, Headphones } from 'lucide-react';
 import { FilterState } from '../types';
 
 interface SidebarFiltersProps {
@@ -16,19 +16,64 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({
   const [minInput, setMinInput] = useState<number>(filterState.minPrice);
   const [maxInput, setMaxInput] = useState<number>(filterState.maxPrice);
 
-  const manufacturerOptions = [
-    { name: 'Samsung', count: 34 },
-    { name: 'Tecno Mobile', count: 28 },
-    { name: 'Infinix', count: 19 },
-    { name: 'Apple iPhone', count: 12 },
-    { name: 'Xiaomi / Redmi', count: 8 }
+  const categories = [
+    { id: 'all', name: 'All Tech & Devices', icon: Smartphone },
+    { id: 'mobile', name: 'Mobile Phones', icon: Smartphone },
+    { id: 'laptops', name: 'Laptops & MacBooks', icon: Laptop },
+    { id: 'tvs', name: 'Smart TVs & Audio', icon: Tv },
+    { id: 'appliances', name: 'Home Appliances', icon: Home },
+    { id: 'accessories', name: 'Accessories & Audio', icon: Headphones }
   ];
+
+  const getManufacturersForCategory = () => {
+    switch (filterState.selectedCategory) {
+      case 'laptops':
+        return [
+          { name: 'Apple', count: 12 },
+          { name: 'HP', count: 18 },
+          { name: 'Dell', count: 10 },
+          { name: 'Lenovo', count: 6 }
+        ];
+      case 'tvs':
+        return [
+          { name: 'Samsung', count: 16 },
+          { name: 'LG', count: 12 },
+          { name: 'JBL', count: 6 },
+          { name: 'TCL', count: 4 }
+        ];
+      case 'appliances':
+        return [
+          { name: 'Samsung', count: 20 },
+          { name: 'Midea', count: 16 },
+          { name: 'LG', count: 10 },
+          { name: 'Philips', count: 6 }
+        ];
+      case 'accessories':
+        return [
+          { name: 'Oraimo', count: 35 },
+          { name: 'Apple', count: 22 },
+          { name: 'Samsung', count: 15 },
+          { name: 'Anker', count: 12 }
+        ];
+      case 'mobile':
+      default:
+        return [
+          { name: 'Samsung', count: 34 },
+          { name: 'Tecno Mobile', count: 28 },
+          { name: 'Infinix', count: 19 },
+          { name: 'Apple iPhone', count: 12 },
+          { name: 'Xiaomi / Redmi', count: 8 }
+        ];
+    }
+  };
+
+  const manufacturerOptions = getManufacturersForCategory();
 
   const storageOptions = [
     { label: '4GB / 64GB', value: '4GB / 64GB' },
     { label: '4GB / 128GB', value: '4GB / 128GB' },
     { label: '8GB / 256GB', value: '8GB / 256GB' },
-    { label: '12GB / 512GB', value: '12GB / 512GB' }
+    { label: '16GB / 512GB', value: '16GB / 512GB' }
   ];
 
   const handleToggleManufacturer = (name: string) => {
@@ -50,7 +95,34 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({
 
   return (
     <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-5">
-      {/* 1. Sort By Card */}
+      {/* 1. Category Switcher */}
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
+        <label className="block text-xs font-bold text-slate-800 mb-2">
+          Technology Department
+        </label>
+        <div className="space-y-1">
+          {categories.map((cat) => {
+            const isSelected = filterState.selectedCategory === cat.id;
+            const Icon = cat.icon;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => onFilterChange({ selectedCategory: cat.id, selectedBrand: 'All' })}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#073c2c] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-emerald-300' : 'text-slate-400'}`} />
+                <span className="truncate">{cat.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 2. Sort By Card */}
       <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
         <label className="block text-xs font-bold text-slate-800 mb-2">
           Sort by
@@ -71,7 +143,7 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({
         </div>
       </div>
 
-      {/* 2. Price Range */}
+      {/* 3. Price Range */}
       <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-bold text-slate-900">Price range</span>
@@ -106,7 +178,6 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({
             </div>
           </div>
 
-          {/* Range Slider Track */}
           <div className="pt-2">
             <input
               type="range"
@@ -135,7 +206,7 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({
         </form>
       </div>
 
-      {/* 3. Discounted Only Toggle */}
+      {/* 4. Discounted Only Toggle */}
       <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-red-500 text-sm">🏷</span>
@@ -158,10 +229,10 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({
         </button>
       </div>
 
-      {/* 4. Manufacturer */}
+      {/* 5. Brand Selection */}
       <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-slate-900">Manufacturer</span>
+          <span className="text-xs font-bold text-slate-900">Brand / Maker</span>
           <span className="text-[10px] font-bold text-slate-400 tracking-wider">SELECT</span>
         </div>
         <div className="space-y-2.5">
@@ -192,10 +263,10 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({
         </div>
       </div>
 
-      {/* 5. Storage & RAM */}
+      {/* 6. Storage & RAM (Optional filter for computing/phones) */}
       <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs">
         <label className="block text-xs font-bold text-slate-900 mb-3">
-          Storage & RAM
+          Memory & Storage
         </label>
         <div className="grid grid-cols-2 gap-2">
           {storageOptions.map((opt) => {
@@ -221,14 +292,14 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({
         </div>
       </div>
 
-      {/* 6. Franko Guarantee Banner Box */}
+      {/* 7. Franko Guarantee Banner Box */}
       <div className="bg-[#07392a] text-white rounded-2xl p-4 shadow-sm border border-emerald-900/40 relative overflow-hidden">
         <div className="flex items-center gap-2 mb-2">
           <ShieldCheck className="w-5 h-5 text-emerald-400" />
-          <h4 className="text-xs font-bold tracking-wide text-white">Franko Guarantee</h4>
+          <h4 className="text-xs font-bold tracking-wide text-white">Franko Tech Guarantee</h4>
         </div>
         <p className="text-[11px] text-emerald-100/90 leading-relaxed font-normal">
-          Every smartphone purchased includes an official 12-month manufacturer warranty and repair coverage at our 35 nationwide service hubs.
+          Every phone, laptop, smart TV, home appliance, and accessory purchased includes an official 12-month manufacturer warranty and repair coverage at our 35 nationwide service hubs.
         </p>
       </div>
     </aside>

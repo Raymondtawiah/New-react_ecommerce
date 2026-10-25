@@ -12,13 +12,15 @@ export const VendorPayouts: React.FC<VendorPayoutsProps> = ({ payouts, onRequest
   const [channel, setChannel] = useState<VendorPayout['channel']>('MTN MoMo');
   const [recipientNumber, setRecipientNumber] = useState('024 456 7890');
   const [submittedMessage, setSubmittedMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const availableBalance = 42500.0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
     if (amount <= 0 || amount > availableBalance) {
-      alert(`Amount must be between GH₵ 100.00 and GH₵ ${availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`);
+      setErrorMessage(`Amount must be between GH₵ 100.00 and GH₵ ${availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`);
       return;
     }
 
@@ -75,6 +77,13 @@ export const VendorPayouts: React.FC<VendorPayoutsProps> = ({ payouts, onRequest
             <div className="mb-3 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl p-2.5 text-xs flex items-center gap-1.5 font-medium">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{submittedMessage}</span>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="mb-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl p-2.5 text-xs flex items-center gap-1.5 font-medium">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <span>{errorMessage}</span>
             </div>
           )}
 

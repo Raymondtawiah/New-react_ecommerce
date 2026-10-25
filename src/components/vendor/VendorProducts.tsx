@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Search, Plus, Trash2, Edit3, ExternalLink, Check, RefreshCw } from 'lucide-react';
+import { Search, Plus, Trash2, Edit3, ExternalLink, Check, Laptop, Tv, Home, Headphones, Smartphone } from 'lucide-react';
 import { Product } from '../../types';
-import { PhoneGraphic } from '../PhoneGraphics';
+import { TechGraphic } from '../TechGraphics';
 
 interface VendorProductsProps {
   products: Product[];
@@ -19,16 +19,17 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
   onViewProductOnStorefront
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedBrand, setSelectedBrand] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editPriceInput, setEditPriceInput] = useState<number>(0);
 
   const filtered = products.filter((p) => {
     const matchesSearch =
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.fullName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBrand = selectedBrand === 'All' || p.brand.toLowerCase() === selectedBrand.toLowerCase();
-    return matchesSearch && matchesBrand;
+      p.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.brand.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || p.category === selectedCategory;
+    return matchesSearch && matchesCategory;
   });
 
   const handleStartEdit = (p: Product) => {
@@ -46,9 +47,9 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
       {/* Top Header & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
         <div>
-          <h3 className="text-base font-extrabold text-slate-900">Smartphone Catalog & Inventory</h3>
+          <h3 className="text-base font-extrabold text-slate-900">Technology & Accessories Inventory</h3>
           <p className="text-xs text-slate-500">
-            {products.length} smartphone model lines registered under your vendor account
+            {products.length} registered SKUs across phones, laptops, smart TVs, appliances & accessories
           </p>
         </div>
 
@@ -57,11 +58,11 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
           className="bg-[#073c2c] hover:bg-[#05281d] text-white px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition-colors shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>Add New Smartphone</span>
+          <span>Add Technology Item</span>
         </button>
       </div>
 
-      {/* Filter and Search Bar */}
+      {/* Category Tabs & Search Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -69,23 +70,31 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search products by model, storage, specs..."
+            placeholder="Search by device name, brand, or specs..."
             className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#073c2c]"
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-          {['All', 'Samsung', 'Tecno Mobile', 'Infinix', 'Apple iPhone', 'Xiaomi / Redmi'].map((b) => (
+        {/* Category Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+          {[
+            { id: 'all', label: 'All Items' },
+            { id: 'mobile', label: 'Phones' },
+            { id: 'laptops', label: 'Laptops' },
+            { id: 'tvs', label: 'Smart TVs' },
+            { id: 'appliances', label: 'Appliances' },
+            { id: 'accessories', label: 'Accessories' }
+          ].map((cat) => (
             <button
-              key={b}
-              onClick={() => setSelectedBrand(b)}
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer transition-colors ${
-                selectedBrand === b
-                  ? 'bg-[#073c2c] text-white'
+                selectedCategory === cat.id
+                  ? 'bg-[#073c2c] text-white shadow-xs'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              {b}
+              {cat.label}
             </button>
           ))}
         </div>
@@ -96,12 +105,12 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
         <table className="w-full text-xs text-left">
           <thead>
             <tr className="border-b border-slate-200 text-slate-400 uppercase text-[10px] font-bold">
-              <th className="pb-3 pl-2">Product</th>
-              <th className="pb-3">Brand & Category</th>
-              <th className="pb-3">Storage / RAM</th>
-              <th className="pb-3">Specs</th>
+              <th className="pb-3 pl-2">Product Item</th>
+              <th className="pb-3">Department</th>
+              <th className="pb-3">Brand & Line</th>
+              <th className="pb-3">Key Highlights</th>
               <th className="pb-3 text-right">Price (GH₵)</th>
-              <th className="pb-3">Stock Channel</th>
+              <th className="pb-3">Showroom Channel</th>
               <th className="pb-3 text-right pr-2">Actions</th>
             </tr>
           </thead>
@@ -112,7 +121,7 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
                       <div className="scale-40">
-                        <PhoneGraphic type={prod.phoneType} />
+                        <TechGraphic type={prod.graphicType || prod.phoneType || 'phone'} />
                       </div>
                     </div>
                     <div>
@@ -123,18 +132,18 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
                 </td>
 
                 <td className="py-3">
+                  <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold text-[10px] uppercase">
+                    {prod.categoryName || prod.category}
+                  </span>
+                </td>
+
+                <td className="py-3">
                   <span className="font-bold text-slate-700">{prod.brand}</span>
                   <div className="text-[10px] text-slate-400 uppercase">{prod.brandCategory}</div>
                 </td>
 
-                <td className="py-3">
-                  <span className="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-semibold text-[11px]">
-                    {prod.storage} • {prod.ram}
-                  </span>
-                </td>
-
-                <td className="py-3 text-[11px] text-slate-500 max-w-[150px] truncate">
-                  {prod.specs.join(', ')}
+                <td className="py-3 text-[11px] text-slate-500 max-w-[160px] truncate">
+                  {prod.specs.join(' • ')}
                 </td>
 
                 <td className="py-3 text-right font-black text-slate-900 tabular-nums">
@@ -148,7 +157,7 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
                       />
                       <button
                         onClick={() => handleSavePrice(prod.id)}
-                        className="p-1 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+                        className="p-1 bg-emerald-600 text-white rounded hover:bg-emerald-700 cursor-pointer"
                         title="Save"
                       >
                         <Check className="w-3.5 h-3.5" />
@@ -159,7 +168,7 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
                       <span>GH₵ {prod.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                       <button
                         onClick={() => handleStartEdit(prod)}
-                        className="text-slate-400 hover:text-slate-700 p-0.5"
+                        className="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer"
                         title="Edit price"
                       >
                         <Edit3 className="w-3 h-3" />
@@ -171,7 +180,7 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
                 <td className="py-3">
                   <div className="flex items-center gap-1.5 text-slate-600 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <span className="truncate max-w-[120px]">{prod.stockStatus}</span>
+                    <span className="truncate max-w-[130px]">{prod.stockStatus}</span>
                   </div>
                 </td>
 

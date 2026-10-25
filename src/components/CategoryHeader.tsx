@@ -1,8 +1,10 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { BRAND_COUNTS } from '../data/products';
 
 interface CategoryHeaderProps {
+  categoryTitle?: string;
+  categorySubtitle?: string;
+  brandList?: Array<{ name: string; count: number; key: string }>;
   selectedBrand: string;
   onSelectBrand: (brandKey: string) => void;
   activeFilters: {
@@ -16,6 +18,9 @@ interface CategoryHeaderProps {
 }
 
 export const CategoryHeader: React.FC<CategoryHeaderProps> = ({
+  categoryTitle = 'Mobile Phones',
+  categorySubtitle = 'Official Manufacturer Stock • Certified Authentic Products in Ghana',
+  brandList = [],
   selectedBrand,
   onSelectBrand,
   activeFilters,
@@ -31,17 +36,17 @@ export const CategoryHeader: React.FC<CategoryHeaderProps> = ({
           <div className="w-1.5 h-10 bg-[#073c2c] rounded-full shrink-0 mt-0.5" />
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Mobile Phones
+              {categoryTitle}
             </h1>
             <p className="text-xs text-slate-500 font-medium mt-1">
-              {totalProductsCount} products available • Official Manufacturer Stock
+              {totalProductsCount} products available • {categorySubtitle}
             </p>
           </div>
         </div>
 
         {/* Right: Brand Filter Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
-          {BRAND_COUNTS.map((brand) => {
+          {brandList.map((brand) => {
             const isSelected = selectedBrand === brand.key;
             return (
               <button

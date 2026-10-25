@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Trash2, Plus, Minus, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { CartItem } from '../types';
-import { PhoneGraphic } from './PhoneGraphics';
+import { TechGraphic } from './TechGraphics';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -10,6 +10,14 @@ interface CartDrawerProps {
   onUpdateQuantity: (productId: string, delta: number) => void;
   onRemoveItem: (productId: string) => void;
   subtotal: number;
+  onPlaceOrder?: (orderInfo: {
+    items: CartItem[];
+    total: number;
+    paymentMethod: 'MTN MoMo' | 'Telecel Cash' | 'Bank Card' | 'Cash on Delivery';
+    recipientName: string;
+    deliveryRegion: string;
+  }) => void;
+  onViewOrders?: () => void;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -18,7 +26,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   items,
   onUpdateQuantity,
   onRemoveItem,
-  subtotal
+  subtotal,
+  onPlaceOrder,
+  onViewOrders
 }) => {
   const [checkoutStep, setCheckoutStep] = useState<'cart' | 'checkout' | 'success'>('cart');
   const [paymentMethod, setPaymentMethod] = useState<'momo' | 'telecel' | 'card' | 'cod'>('momo');
@@ -28,14 +38,17 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
 
+  const [promoError, setPromoError] = useState('');
+
   if (!isOpen) return null;
 
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
     if (promoCode.trim().toUpperCase() === 'FRANKO50') {
       setDiscount(50);
+      setPromoError('');
     } else {
-      alert('Invalid code. Try FRANKO50');
+      setPromoError('Invalid promo code. Try FRANKO50');
     }
   };
 
@@ -97,9 +110,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     {items.map(({ product, quantity }) => (
                       <div key={product.id} className="py-3 flex items-center gap-3">
                         <div className="w-16 h-16 bg-slate-50 rounded-xl border border-slate-200 p-1 flex items-center justify-center shrink-0">
-                          <div className="scale-65">
-                            <PhoneGraphic type={product.phoneType} />
-                          </div>
+                          <TechGraphic
+                            category={product.category}
+                            type={product.graphicType || product.phoneType || 'phone'}
+                            angle="front"
+                            uploadedImages={product.uploadedImages}
+                            zoomLevel={1}
+                            className="w-full h-full object-contain"
+                          />
                         </div>
 
                         <div className="flex-1 min-w-0">
@@ -344,7 +362,24 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     Back
                   </button>
                   <button
-                    onClick={() => setCheckoutStep('success')}
+                    onClick={() => {
+                      if (onPlaceOrder) {
+                        const paymentLabels: Record<string, 'MTN MoMo' | 'Telecel Cash' | 'Bank Card' | 'Cash on Delivery'> = {
+                          momo: 'MTN MoMo',
+                          telecel: 'Telecel Cash',
+                          card: 'Bank Card',
+                          cod: 'Cash on Delivery'
+                        };
+                        onPlaceOrder({
+                          items,
+                          total: finalTotal,
+                          paymentMethod: paymentLabels[paymentMethod] || 'MTN MoMo',
+                          recipientName: customerName || 'Franko Valued Customer',
+                          deliveryRegion
+                        });
+                      }
+                      setCheckoutStep('success');
+                    }}
                     className="w-2/3 bg-[#073c2c] hover:bg-[#05291e] text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
                   >
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -356,13 +391,26 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           )}
 
           {checkoutStep === 'success' && (
-            <div className="p-4 border-t border-slate-200 bg-slate-50">
+            <div className="p-4 border-t border-slate-200 bg-slate-50 flex flex-col gap-2">
+              {onViewOrders && (
+                <button
+                  onClick={() => {
+                    setCheckoutStep('cart');
+                    onClose();
+                    onViewOrders();
+                  }}
+                  className="w-full bg-[#073c2c] hover:bg-[#05291e] text-white py-3 rounded-xl font-bold text-xs cursor-pointer transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>Track My Order Live</span>
+                  <ArrowRight className="w-4 h-4 text-emerald-300" />
+                </button>
+              )}
               <button
                 onClick={() => {
                   setCheckoutStep('cart');
                   onClose();
                 }}
-                className="w-full bg-[#073c2c] hover:bg-[#05291e] text-white py-3 rounded-xl font-bold text-xs cursor-pointer transition-colors"
+                className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs cursor-pointer transition-colors"
               >
                 Continue Shopping
               </button>

@@ -4,8 +4,8 @@ import { Flame, ShieldCheck, Award, Truck } from 'lucide-react';
 interface SubNavbarProps {
   activeCategory: string;
   onSelectCategory: (cat: string) => void;
-  onOpenWarranty: () => void;
-  onOpenDeals: () => void;
+  onOpenWarranty?: () => void;
+  onOpenDeals?: () => void;
 }
 
 export const SubNavbar: React.FC<SubNavbarProps> = ({

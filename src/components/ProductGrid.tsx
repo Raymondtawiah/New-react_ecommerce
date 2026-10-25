@@ -14,6 +14,7 @@ interface ProductGridProps {
   onToggleWishlist: (product: Product) => void;
   wishlistIds: string[];
   onQuickView: (product: Product) => void;
+  onViewDetails?: (product: Product) => void;
 }
 
 export const ProductGrid: React.FC<ProductGridProps> = ({
@@ -26,7 +27,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
   onAddToCart,
   onToggleWishlist,
   wishlistIds,
-  onQuickView
+  onQuickView,
+  onViewDetails
 }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -42,7 +44,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         {/* Count and page status */}
         <div className="text-xs text-slate-500 font-semibold">
-          <strong className="text-slate-900 font-extrabold text-sm">{totalFound}</strong> phones found • page {currentPage} of {totalPages}
+          <strong className="text-slate-900 font-extrabold text-sm">{totalFound}</strong> products found • page {currentPage} of {totalPages}
         </div>
 
         {/* View Mode & Sort Dropdown */}
@@ -107,6 +109,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
               onToggleWishlist={onToggleWishlist}
               isWishlisted={wishlistIds.includes(product.id)}
               onQuickView={onQuickView}
+              onViewDetails={onViewDetails}
             />
           ))}
         </div>
@@ -120,7 +123,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
             >
               <div className="flex items-center gap-4 w-full sm:w-auto">
                 <div
-                  onClick={() => onQuickView(product)}
+                  onClick={() => onViewDetails ? onViewDetails(product) : onQuickView(product)}
                   className="w-24 h-24 shrink-0 bg-slate-50 rounded-xl flex items-center justify-center p-1 cursor-pointer"
                 >
                   <div className="scale-75">
@@ -139,7 +142,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
                     {product.brandCategory}
                   </span>
                   <h4
-                    onClick={() => onQuickView(product)}
+                    onClick={() => onViewDetails ? onViewDetails(product) : onQuickView(product)}
                     className="text-sm font-bold text-slate-900 hover:text-[#073c2c] cursor-pointer"
                   >
                     {product.fullName}
@@ -183,7 +186,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
       {/* Pagination Strip */}
       <div className="mt-8 pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-xs text-slate-500 font-medium">
-          Showing <strong className="text-slate-800 font-bold">{totalFound > 0 ? startIndex + 1 : 0} - {endIndex}</strong> of <strong className="text-slate-800 font-bold">{totalFound}</strong> mobile phones
+          Showing <strong className="text-slate-800 font-bold">{totalFound > 0 ? startIndex + 1 : 0} - {endIndex}</strong> of <strong className="text-slate-800 font-bold">{totalFound}</strong> products
         </div>
 
         <div className="flex items-center gap-1.5">

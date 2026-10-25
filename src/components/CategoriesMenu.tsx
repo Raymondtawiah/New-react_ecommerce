@@ -48,18 +48,31 @@ export const CategoriesMenu: React.FC<CategoriesMenuProps> = ({
   ];
 
   return (
-    <div className="absolute top-full left-0 right-0 sm:left-4 sm:right-auto sm:w-[480px] bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 p-4 mt-2">
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-        <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
-          All Department Categories
-        </h3>
-        <button
-          onClick={onClose}
-          className="text-slate-400 hover:text-slate-600 p-1 rounded-md"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      </div>
+    <>
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/30 z-40 backdrop-blur-[1px] transition-opacity animate-in fade-in duration-150"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Floating Menu Drawer */}
+      <div className="fixed top-20 sm:top-24 left-3 right-3 sm:left-6 sm:right-auto sm:w-[460px] bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 p-4 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#073c2c]" />
+            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+              Department Categories
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition-colors"
+            aria-label="Close categories menu"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
       <div className="space-y-1.5 max-h-[70vh] overflow-y-auto">
         {categories.map((cat) => {
@@ -94,5 +107,6 @@ export const CategoriesMenu: React.FC<CategoriesMenuProps> = ({
         })}
       </div>
     </div>
+    </>
   );
 };
