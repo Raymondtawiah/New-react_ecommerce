@@ -1,0 +1,6 @@
+{
+  "name": "Franko Trading - Official Tech & Mobile Store Ghana",
+  "description": "Ghana's premier retailer of certified authentic mobile phones, laptops, and electronics with nationwide fast-dispatch logistics and official warranty.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
