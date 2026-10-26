@@ -222,6 +222,17 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
     }
   }, [user]);
 
+  useEffect(() => {
+    fetch('/api/profile')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.profile && Object.keys(data.profile).length) {
+          setProfile(data.profile);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const notifySave = (msg: string) => {
     setSaveSuccessMsg(msg);
     setTimeout(() => setSaveSuccessMsg(null), 3000);
@@ -237,6 +248,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Save failed');
+      localStorage.setItem('profile', JSON.stringify(profile));
       notifySave('Profile details updated successfully!');
     } catch (err: any) {
       notifySave(err.message);

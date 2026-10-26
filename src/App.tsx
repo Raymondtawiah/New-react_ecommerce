@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { HeaderTopBar } from './components/HeaderTopBar';
 import { AnnouncementBar } from './components/AnnouncementBar';
 import { MainNavbar } from './components/MainNavbar';
@@ -92,6 +92,35 @@ export default function App() {
   // Products dataset (shared between Storefront & Vendor Hub across all tech)
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
 
+  useEffect(() => {
+    fetch('/api/products')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.products) && data.products.length) {
+          setProducts((prev) => {
+            const ids = new Set(prev.map((p) => p.id));
+            const merged = [...prev];
+            for (const p of data.products) {
+              if (!ids.has(p.id)) merged.unshift(p);
+            }
+            return merged;
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/orders')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.orders) && data.orders.length) {
+          setVendorOrders(data.orders);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Customer Orders state
   const [customerOrders, setCustomerOrders] = useState<CustomerOrder[]>(INITIAL_CUSTOMER_ORDERS);
 
@@ -160,6 +189,16 @@ export default function App() {
   const [accountOpen, setAccountOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) setUser(JSON.parse(savedUser));
+  }, []);
+
+  useEffect(() => {
+    if (user) localStorage.setItem('user', JSON.stringify(user));
+    else localStorage.removeItem('user');
+  }, [user]);
 
   // Cart subtotal calculation
   const cartSubtotal = useMemo(() => {
@@ -367,22 +406,38 @@ export default function App() {
   // Vendor actions
   const handleAddProduct = (newProd: Product) => {
     setProducts((prev) => [newProd, ...prev]);
+    fetch('/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newProd),
+    }).catch(() => {});
   };
 
   const handleUpdateProductPrice = (id: string, newPrice: number) => {
     setProducts((prev) =>
       prev.map((p) => (p.id === id ? { ...p, price: newPrice } : p))
     );
+    fetch(`/api/products/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ price: newPrice }),
+    }).catch(() => {});
   };
 
   const handleDeleteProduct = (id: string) => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
+    fetch(`/api/products/${id}`, { method: 'DELETE' }).catch(() => {});
   };
 
   const handleUpdateOrderStatus = (orderId: string, newStatus: VendorOrder['status']) => {
     setVendorOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
     );
+    fetch(`/api/orders/${orderId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus }),
+    }).catch(() => {});
   };
 
   const handleRebalanceStock = (fromHubId: string, toHubId: string, amount: number) => {
