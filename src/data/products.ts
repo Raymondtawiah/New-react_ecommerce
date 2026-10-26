@@ -549,12 +549,54 @@ export const BRAND_COUNTS = [
   { name: 'Google Pixel', count: 4, key: 'Google Pixel' }
 ];
 
+export { RETAIL_LOCATIONS, CORPORATE_INFO, REGION_TABS } from './locations';
+
 export const GHANA_SHOWROOMS = [
-  { city: 'Accra', branches: ['Kwame Nkrumah Circle (Flagship)', 'Oxford Street, Osu', 'Madina Market', 'Kaneshie First Light', 'Spintex Road'] },
-  { city: 'Kumasi', branches: ['Adum (Opposite Central Post)', 'Kejetia Market Terminal', 'Bantama High Street'] },
-  { city: 'Takoradi', branches: ['Market Circle Commercial Area', 'Collins Avenue'] },
-  { city: 'Tamale', branches: ['Central Market Commercial Road', 'Hospital Road'] },
-  { city: 'Sunyani', branches: ['Central Commercial Strip', 'Post Office Square'] },
-  { city: 'Cape Coast', branches: ['Commercial Street Kotokuraba'] },
-  { city: 'Koforidua', branches: ['Central Market Street'] }
+  {
+    city: 'Accra & Tema',
+    branches: [
+      'Kwame Nkrumah Circle (Apex Central Flagship - 030 222 5651)',
+      'Oxford Street, Osu (Adjacent TotalEnergies - 030 277 8910)',
+      'East Legon Tech Lounge (Lagos Avenue - 030 254 3112)',
+      'Madina Commercial Hub (Near Zongo Junction - 030 250 8740)',
+      'Spintex Road Mega Store (Near Texpo Junction - 030 281 2940)',
+      'Kaneshie First Light (Winneba Road Arcade - 030 223 1180)',
+      'Tema Community 1 (Opp. Post Office - 030 320 6710)',
+      'Lapaz Motorway Hub (Nyamekye Junction - 030 240 5512)',
+      'Dansoman High Street (Near Sahara - 030 231 4490)'
+    ]
+  },
+  {
+    city: 'Kumasi & Ashanti',
+    branches: [
+      'Adum Kumasi (Prempeh II St., Opp. General Post Office - 032 203 4410)',
+      'Kejetia Market Terminal (Block C-14 Ground Floor - 032 204 1220)',
+      'Bantama High Street (Near Cultural Centre - 032 208 9340)',
+      'KNUST Tech Junction (Commercial Bank Strip - 032 206 5120)',
+      'Suame Roundabout (Offinso Road Center - 032 202 3311)',
+      'Asafo VIP Interchange (Opp. Market Bus Terminal - 032 201 8890)'
+    ]
+  },
+  {
+    city: 'Western & Central',
+    branches: [
+      'Takoradi Market Circle Flagship (Collins Avenue - 031 202 8820)',
+      'Cape Coast Kotokuraba (Commercial Street - 033 213 4560)',
+      'Tarkwa Mining Hub (Main Lorry Station Road - 031 232 0910)',
+      'Mankessim Central (Saltpond Road Strip - 033 209 1140)'
+    ]
+  },
+  {
+    city: 'Northern, Bono & Eastern',
+    branches: [
+      'Tamale Central Flagship (Bolgatanga Road - 037 202 1140)',
+      'Sunyani Post Office Square (Commercial Boulevard - 035 202 7330)',
+      'Techiman Central Market Road (Near VIP Station - 035 252 2110)',
+      'Koforidua Central Market (Opp. Standard Chartered - 034 202 1990)',
+      'Ho Central Hub (Opp. Civic Centre - 036 202 4430)',
+      'Bolgatanga Commercial Strip (Near Central Market - 038 202 2270)',
+      'Wa Central Station Hub (Upper West Regional Center - 039 202 1150)'
+    ]
+  }
 ];
+

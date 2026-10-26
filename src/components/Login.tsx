@@ -68,8 +68,8 @@ export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp }) => {
           </h2>
           <p className="text-sm text-slate-500 mt-1">
             {mode === 'login'
-              ? 'Sign in to your Franko Trading account'
-              : 'Join Franko Trading today'}
+              ? 'Sign in to your ApexTech Ghana account'
+              : 'Join ApexTech Ghana today'}
           </p>
         </div>
 

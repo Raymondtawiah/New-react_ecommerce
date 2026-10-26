@@ -19,6 +19,7 @@ import { QuickViewModal } from './components/QuickViewModal';
 import { WhatsAppChatWidget } from './components/WhatsAppChatWidget';
 import { CategoriesMenu } from './components/CategoriesMenu';
 import { ShowroomsModal, AccountModal } from './components/InfoModals';
+import { Login } from './components/Login';
 import { VendorDashboard } from './components/vendor/VendorDashboard';
 import { ScrollZoomSection } from './components/ScrollZoomSection';
 import { ProductDetailsPage } from './components/ProductDetailsPage';
@@ -26,7 +27,6 @@ import { CustomerOrdersPage, CustomerOrder } from './components/CustomerOrdersPa
 import { CustomerWishlistPage } from './components/CustomerWishlistPage';
 import { UserProfilePage } from './components/UserProfilePage';
 import { INITIAL_PRODUCTS, CATEGORY_METADATA, BRAND_COUNTS } from './data/products';
-import { Login } from './components/Login';
 import {
   INITIAL_VENDOR_ORDERS,
   INITIAL_SHOWROOM_STOCKS,
@@ -404,7 +404,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-[#073c2c] selection:text-white flex flex-col overflow-x-hidden w-full max-w-full">
+    <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-[#073c2c] selection:text-white flex flex-col">
       {/* 1. Slim Top Notification & Contact Bar */}
       <HeaderTopBar
         onOpenHelp={() => setShowroomsOpen(true)}
@@ -554,7 +554,6 @@ export default function App() {
         /* CUSTOMER PROFILE & ACCOUNT MANAGEMENT PAGE */
         <div className="flex-1 animate-page-zoom-in">
           <UserProfilePage
-            user={user}
             onBackToStore={() => {
               setViewMode('storefront');
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -651,18 +650,20 @@ export default function App() {
               <NewsletterBanner />
             </ScrollZoomSection>
           </main>
-
-          {/* 5. Deep Forest Green Footer */}
-          <Footer
-            onOpenShowrooms={() => setShowroomsOpen(true)}
-            onOpenHelp={() => setShowroomsOpen(true)}
-            onOpenWarranty={() => setShowroomsOpen(true)}
-            onOpenDeliveryTrack={() => {
-              setViewMode('orders');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
         </div>
+      )}
+
+      {/* 5. Deep Forest Green Footer (Visible on all customer views) */}
+      {viewMode !== 'vendor' && (
+        <Footer
+          onOpenShowrooms={() => setShowroomsOpen(true)}
+          onOpenHelp={() => setShowroomsOpen(true)}
+          onOpenWarranty={() => setShowroomsOpen(true)}
+          onOpenDeliveryTrack={() => {
+            setViewMode('orders');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
       )}
 
       {/* Floating Interactive WhatsApp Chat Desk */}
@@ -700,30 +701,13 @@ export default function App() {
       />
 
       {/* Login / Sign Up Modal */}
-     
-{loginOpen && (
-  <Login
-    onClose={() => setLoginOpen(false)}
-    onLogin={(email) => {
-      setUser({
-        name: email.split('@')[0],
-        email,
-      });
-
-      setLoginOpen(false);
-      setViewMode('profile');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }}
-    onSignUp={(name, email) => {
-      setUser({ name, email });
-
-      setLoginOpen(false);
-      setViewMode('profile');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }}
-  />
-)}
-
+      {loginOpen && (
+        <Login
+          onClose={() => setLoginOpen(false)}
+          onLogin={(email: string) => setUser({ name: email.split('@')[0], email })}
+          onSignUp={(name: string, email: string) => setUser({ name, email })}
+        />
+      )}
     </div>
   );
 }

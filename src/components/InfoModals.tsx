@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
-import { X, MapPin, Phone, Clock, ShieldCheck, CheckCircle2, User, KeyRound } from 'lucide-react';
-import { GHANA_SHOWROOMS } from '../data/products';
+import {
+  X,
+  MapPin,
+  Phone,
+  Clock,
+  ShieldCheck,
+  CheckCircle2,
+  User,
+  Search,
+  MessageSquare,
+  Sparkles,
+  ExternalLink
+} from 'lucide-react';
+import { RETAIL_LOCATIONS, CORPORATE_INFO, REGION_TABS, RetailLocation } from '../data/locations';
 
 interface ShowroomsModalProps {
   isOpen: boolean;
@@ -8,52 +20,168 @@ interface ShowroomsModalProps {
 }
 
 export const ShowroomsModal: React.FC<ShowroomsModalProps> = ({ isOpen, onClose }) => {
+  const [search, setSearch] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('all');
+
   if (!isOpen) return null;
+
+  const filtered = RETAIL_LOCATIONS.filter((loc) => {
+    const matchesRegion = selectedRegion === 'all' || loc.region === selectedRegion;
+    const q = search.toLowerCase();
+    const matchesSearch =
+      !q ||
+      loc.name.toLowerCase().includes(q) ||
+      loc.city.toLowerCase().includes(q) ||
+      loc.address.toLowerCase().includes(q) ||
+      loc.landmark.toLowerCase().includes(q);
+    return matchesRegion && matchesSearch;
+  });
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div onClick={onClose} className="fixed inset-0 bg-black/60 backdrop-blur-xs" />
       <div className="min-h-screen px-4 flex items-center justify-center p-4">
-        <div className="relative bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl z-10 border border-slate-200">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="relative bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl z-10 border border-slate-200">
+          
+          {/* Header */}
+          <div className="flex items-start justify-between pb-4 border-b border-slate-100">
             <div>
-              <h3 className="text-base font-extrabold text-slate-900">35+ ApexTech Showrooms in Ghana</h3>
-              <p className="text-xs text-slate-500">Pick up your order or get instant warranty servicing</p>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">
+                  Verified Retail Directory
+                </span>
+              </div>
+              <h3 className="text-lg font-black text-slate-900 mt-0.5">
+                35+ ApexTech Showrooms & Hubs in Ghana
+              </h3>
+              <p className="text-xs text-slate-500">
+                Walk-in device collection, live hardware demonstrations, and certified warranty service
+              </p>
             </div>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1">
+            <button
+              onClick={onClose}
+              className="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="mt-4 space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-            {GHANA_SHOWROOMS.map((reg) => (
-              <div key={reg.city} className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <MapPin className="w-4 h-4 text-[#073c2c]" />
-                  <h4 className="text-sm font-bold text-slate-900">{reg.city} Hubs</h4>
-                </div>
-                <ul className="space-y-1.5 text-xs text-slate-600">
-                  {reg.branches.map((b, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          {/* Search & Region Filters */}
+          <div className="mt-4 space-y-3">
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <input
+                type="text"
+                placeholder="Search by city (e.g. Accra, Kumasi, Takoradi) or landmark..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#073c2c] focus:bg-white transition-all"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {REGION_TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedRegion(tab.id)}
+                  className={`px-3 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer ${
+                    selectedRegion === tab.id
+                      ? 'bg-[#073c2c] text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          {/* Showroom Cards List */}
+          <div className="mt-4 space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+            {filtered.length === 0 ? (
+              <div className="text-center py-8 text-xs text-slate-500">
+                No retail showroom found matching &ldquo;{search}&rdquo;. Try another search term or select &ldquo;All Showrooms&rdquo;.
+              </div>
+            ) : (
+              filtered.map((loc) => (
+                <div
+                  key={loc.id}
+                  className="bg-slate-50 hover:bg-emerald-50/40 border border-slate-200 hover:border-emerald-300 rounded-2xl p-3.5 transition-all"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-[#073c2c] shrink-0" />
+                        <h4 className="text-xs font-bold text-slate-900">{loc.name}</h4>
+                        {loc.isFlagship && (
+                          <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase px-1.5 py-0.5 rounded">
+                            Flagship
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-600 mt-1 pl-6">
+                        {loc.address}
+                      </p>
+                      <p className="text-[11px] text-slate-400 pl-6">
+                        Landmark: <span className="text-slate-600">{loc.landmark}</span>
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                      <a
+                        href={`tel:${loc.phone.replace(/\s+/g, '')}`}
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#073c2c] bg-white border border-slate-200 px-2.5 py-1 rounded-lg hover:border-emerald-500 transition-colors"
+                      >
+                        <Phone className="w-3 h-3" />
+                        <span>{loc.phone}</span>
+                      </a>
+                      <a
+                        href={`https://wa.me/233${loc.whatsapp.replace(/^0/, '')}?text=Hello%20ApexTech,%20inquiry%20regarding%20${encodeURIComponent(loc.name)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 hover:underline"
+                      >
+                        <MessageSquare className="w-3 h-3" />
+                        <span>WhatsApp Hub</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 pt-2 border-t border-slate-200/60 pl-6 flex items-center justify-between text-[11px] text-slate-500">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-slate-400" />
+                      <span>{loc.hours}</span>
+                    </span>
+                    <span className="text-emerald-700 font-medium">
+                      ✓ Free 15-min pickup available
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Footer note */}
+          <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
             <span className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-emerald-600" />
-              <span>Mon - Sat: 8:00 AM - 6:30 PM</span>
+              <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>National Hotline: Mon - Sat: 8:00 AM - 7:30 PM</span>
             </span>
             <span className="flex items-center gap-1.5 font-bold text-[#073c2c]">
               <Phone className="w-4 h-4" />
-              <span>030 222 5651</span>
+              <span>{CORPORATE_INFO.phones.hotline1}</span>
             </span>
           </div>
+
         </div>
       </div>
     </div>
