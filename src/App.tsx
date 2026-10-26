@@ -34,7 +34,6 @@ import {
 } from './data/vendorData';
 import { Product, FilterState, CartItem, TechCategory, ProductImageAngles } from './types';
 import { VendorOrder, ShowroomStockAllocation, VendorPayout, WarrantyClaim } from './types/vendor';
-
 const INITIAL_CUSTOMER_ORDERS: CustomerOrder[] = [
   {
     id: 'ord-cust-1',
@@ -158,6 +157,8 @@ export default function App() {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [showroomsOpen, setShowroomsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   // Cart subtotal calculation
   const cartSubtotal = useMemo(() => {
@@ -446,10 +447,8 @@ export default function App() {
           setViewMode('orders');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        onOpenAccount={() => {
-          setViewMode('profile');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onOpenAccount={() => { if (user) setViewMode('profile'); else setLoginOpen(true); }}
+        user={user}
         onOpenVendorPortal={() => {
           setViewMode(viewMode === 'vendor' ? 'storefront' : 'vendor');
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -698,11 +697,8 @@ export default function App() {
         onClose={() => setShowroomsOpen(false)}
       />
 
-      {/* Account Sign In Modal */}
-      <AccountModal
-        isOpen={accountOpen}
-        onClose={() => setAccountOpen(false)}
-      />
+      {/* Login / Sign Up Modal */}
+      {loginOpen && <Login onClose={() => setLoginOpen(false)} onLogin={(email) => setUser({ name: email.split('@')[0], email })} onSignUp={(name, email) => setUser({ name, email })} />}
     </div>
   );
 }
