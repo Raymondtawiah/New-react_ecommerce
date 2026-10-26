@@ -12,6 +12,7 @@ interface MainNavbarProps {
   onOpenWishlist: () => void;
   onOpenOrders?: () => void;
   onOpenAccount: () => void;
+  user?: any;
   onOpenVendorPortal: () => void;
   cartCount: number;
   cartSubtotal: number;
@@ -31,6 +32,7 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
   onOpenWishlist,
   onOpenOrders,
   onOpenAccount,
+  user,
   onOpenVendorPortal,
   cartCount,
   cartSubtotal,
@@ -229,8 +231,14 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
                 <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div className="hidden lg:flex flex-col text-xs leading-tight">
-                <span className="text-slate-400 text-[10px]">Raymond Tawiah</span>
-                <span className="font-bold text-slate-800 group-hover:text-[#073c2c] transition-colors">My Profile</span>
+                {user ? (
+                  <span className="font-bold text-slate-800">{user.name || (user.email ? user.email.split('@')[0] : 'User')}</span>
+                ) : (
+                  <>
+                    <span className="text-slate-400 text-[10px]">Welcome</span>
+                    <span className="font-bold text-slate-800">Sign In / Join</span>
+                  </>
+                )}
               </div>
             </button>
 
