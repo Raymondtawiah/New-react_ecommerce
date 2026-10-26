@@ -221,16 +221,16 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
             {/* Account Profile Button */}
             <button
               onClick={onOpenAccount}
-              className="flex items-center gap-2 text-left p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
-              title="User Account & Settings"
-              aria-label="User Account"
+              className="flex items-center gap-2 text-left p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer group"
+              title="Customer Profile & Settings"
+              aria-label="Customer Profile & Settings"
             >
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#073c2c] text-white flex items-center justify-center shrink-0 shadow-xs">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#073c2c] group-hover:bg-[#052d21] text-white flex items-center justify-center shrink-0 shadow-xs transition-colors">
                 <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div className="hidden lg:flex flex-col text-xs leading-tight">
-                <span className="text-slate-400 text-[10px]">Welcome</span>
-                <span className="font-bold text-slate-800">Sign In / Join</span>
+                <span className="text-slate-400 text-[10px]">Raymond Tawiah</span>
+                <span className="font-bold text-slate-800 group-hover:text-[#073c2c] transition-colors">My Profile</span>
               </div>
             </button>
 

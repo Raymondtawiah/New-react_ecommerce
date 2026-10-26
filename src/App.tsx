@@ -24,6 +24,7 @@ import { ScrollZoomSection } from './components/ScrollZoomSection';
 import { ProductDetailsPage } from './components/ProductDetailsPage';
 import { CustomerOrdersPage, CustomerOrder } from './components/CustomerOrdersPage';
 import { CustomerWishlistPage } from './components/CustomerWishlistPage';
+import { UserProfilePage } from './components/UserProfilePage';
 import { INITIAL_PRODUCTS, CATEGORY_METADATA, BRAND_COUNTS } from './data/products';
 import {
   INITIAL_VENDOR_ORDERS,
@@ -82,8 +83,8 @@ const INITIAL_CUSTOMER_ORDERS: CustomerOrder[] = [
 ];
 
 export default function App() {
-  // Navigation View: 'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor'
-  const [viewMode, setViewMode] = useState<'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor'>('storefront');
+  // Navigation View: 'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor' | 'profile'
+  const [viewMode, setViewMode] = useState<'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor' | 'profile'>('storefront');
 
   // Currently inspected product for full details page
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(INITIAL_PRODUCTS[0]);
@@ -445,7 +446,10 @@ export default function App() {
           setViewMode('orders');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        onOpenAccount={() => setAccountOpen(true)}
+        onOpenAccount={() => {
+          setViewMode('profile');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
         onOpenVendorPortal={() => {
           setViewMode(viewMode === 'vendor' ? 'storefront' : 'vendor');
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -544,6 +548,26 @@ export default function App() {
             onSelectProduct={handleViewProductDetails}
             onBackToShop={() => setViewMode('storefront')}
             onMoveAllToCart={handleMoveAllWishlistToCart}
+          />
+        </div>
+      ) : viewMode === 'profile' ? (
+        /* CUSTOMER PROFILE & ACCOUNT MANAGEMENT PAGE */
+        <div className="flex-1 animate-page-zoom-in">
+          <UserProfilePage
+            onBackToStore={() => {
+              setViewMode('storefront');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onNavigateOrders={() => {
+              setViewMode('orders');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onNavigateWishlist={() => {
+              setViewMode('wishlist');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            ordersCount={customerOrders.length}
+            wishlistCount={wishlistIds.length}
           />
         </div>
       ) : (
