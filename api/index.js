@@ -23,5 +23,7 @@ app.post('/api/auth/login', async (req, res) => {
   res.json({ session: data.session, user: data.user });
 });
 
-const PORT = process.env.PORT || 5000;
+app.put('/api/profile', (req, res) => {
+  res.json({ profile: req.body });
+});
 app.listen(PORT, () => console.log(`API running on ${PORT}`));

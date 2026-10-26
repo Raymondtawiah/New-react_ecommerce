@@ -80,7 +80,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <TechGraphic
           category={product.category}
           type={product.graphicType || product.phoneType || 'phone'}
-          angle="duo"
+          angle="front"
           uploadedImages={product.uploadedImages}
           zoomLevel={1}
           className="w-full h-full object-contain transform transition-transform duration-300 group-hover:scale-105"

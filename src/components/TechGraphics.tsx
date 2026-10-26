@@ -352,8 +352,8 @@ export const TechGraphic: React.FC<TechGraphicProps> = ({
       case 'samsung-a08':
       default:
         return (
-          <div className="relative flex items-center justify-center -space-x-6">
-            <div className="w-20 h-36 rounded-2xl bg-slate-900 border-2 border-slate-700 shadow-md overflow-hidden relative transform -rotate-3 z-10 transition-transform group-hover:scale-105 duration-300">
+          <div className="relative flex items-center justify-center -space-x-4">
+            <div className="w-28 h-52 rounded-2xl bg-slate-900 border-2 border-slate-700 shadow-md overflow-hidden relative transform -rotate-3 z-10 transition-transform group-hover:scale-105 duration-300">
               <div className="w-8 h-2 bg-slate-900 rounded-b-md mx-auto absolute top-0 left-1/2 -translate-x-1/2 z-20" />
               <div className="w-full h-full bg-gradient-to-b from-emerald-500 via-teal-600 to-slate-900 p-2 flex flex-col justify-between">
                 <div className="text-[7px] text-white/80 font-medium pt-1 text-center">10:45</div>
@@ -364,7 +364,7 @@ export const TechGraphic: React.FC<TechGraphicProps> = ({
                 </div>
               </div>
             </div>
-            <div className="w-20 h-36 rounded-2xl bg-gradient-to-b from-emerald-100 via-teal-200 to-emerald-300 border-2 border-emerald-300 shadow-lg relative p-2 transform rotate-6 transition-transform group-hover:rotate-12 duration-300">
+            <div className="w-28 h-52 rounded-2xl bg-gradient-to-b from-emerald-100 via-teal-200 to-emerald-300 border-2 border-emerald-300 shadow-lg relative p-2 transform rotate-6 transition-transform group-hover:rotate-12 duration-300">
               <div className="flex flex-col space-y-1.5 pt-1 pl-0.5">
                 <div className="w-4 h-4 rounded-full bg-slate-900 border-2 border-emerald-400 flex items-center justify-center">
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />

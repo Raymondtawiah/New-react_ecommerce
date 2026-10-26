@@ -72,8 +72,8 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
 
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-xs transition-all">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5">
-        <div className="flex items-center justify-between gap-2 sm:gap-4 lg:gap-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 min-w-0">
+        <div className="flex items-center justify-between gap-2 sm:gap-4 lg:gap-6 min-w-0">
           {/* 1. Left Cluster: Logo & Categories Dropdown */}
           <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
             <div 
@@ -106,7 +106,7 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
           </div>
 
           {/* 2. Middle Search Bar (Tablet & Desktop) */}
-          <div ref={searchContainerRef} className="relative flex-1 max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg hidden md:block">
+          <div ref={searchContainerRef} className="relative flex-1 min-w-0 max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg hidden md:block">
             <div className="flex items-center rounded-xl border border-slate-300 focus-within:border-[#073c2c] focus-within:ring-2 focus-within:ring-[#073c2c]/15 overflow-hidden bg-white shadow-xs transition-all">
               <div className="pl-3.5 text-slate-400">
                 <Search className="w-4 h-4" />
@@ -245,7 +245,7 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
             {/* Order Page Icon Button (Preserved & Responsive) */}
             <button
               onClick={onOpenOrders}
-              className="relative p-2 text-slate-700 hover:text-[#073c2c] hover:bg-emerald-50/80 rounded-xl transition-all cursor-pointer group"
+              className="relative p-2 text-slate-700 hover:text-[#073c2c] hover:bg-emerald-50/80 rounded-xl transition-all cursor-pointer group hidden sm:flex"
               title="Track My Orders"
               aria-label={`Track My Orders (${ordersCount} active)`}
             >
@@ -260,7 +260,7 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
             {/* Wishlist Page Icon Button (Preserved & Responsive) */}
             <button
               onClick={onOpenWishlist}
-              className="relative p-2 text-slate-700 hover:text-[#b91c1c] hover:bg-red-50/80 rounded-xl transition-all cursor-pointer group"
+              className="relative p-2 text-slate-700 hover:text-[#b91c1c] hover:bg-red-50/80 rounded-xl transition-all cursor-pointer group hidden sm:flex"
               title="View Wishlist"
               aria-label={`View Wishlist (${wishlistCount} items)`}
             >
@@ -278,10 +278,10 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
               className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-2 border border-slate-200 hover:border-slate-300 rounded-xl hover:bg-slate-50 transition-all cursor-pointer group shadow-xs"
               aria-label={`View Shopping Cart (${cartCount} items)`}
             >
-              <div className="relative">
+              <div className="relative shrink-0">
                 <ShoppingBag className="w-5 h-5 text-slate-800 group-hover:text-[#b91c1c] transition-colors" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1.5 -right-2 bg-[#b91c1c] text-white text-[10px] font-extrabold min-w-4 h-4 px-1 rounded-full flex items-center justify-center ring-2 ring-white shadow-xs">
+                  <span className="absolute -top-1 -right-1 bg-[#b91c1c] text-white text-[10px] font-extrabold min-w-4 h-4 px-1 rounded-full flex items-center justify-center ring-2 ring-white shadow-xs">
                     {cartCount}
                   </span>
                 )}

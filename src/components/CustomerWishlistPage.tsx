@@ -137,7 +137,7 @@ export const CustomerWishlistPage: React.FC<CustomerWishlistPageProps> = ({
                     <TechGraphic
                       category={product.category}
                       type={product.graphicType || product.phoneType || 'phone'}
-                      angle="duo"
+                      angle="front"
                       uploadedImages={product.uploadedImages}
                       zoomLevel={1}
                       className="w-full h-full object-contain group-hover:scale-105 transition-transform"

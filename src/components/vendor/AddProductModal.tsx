@@ -212,18 +212,18 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
                 <div className="flex items-center gap-1.5">
                   <Camera className="w-4 h-4 text-emerald-600" />
                   <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-wide">
-                    Multi-Angle Product Photos (Front, Back, Side, Detail)
+                    Multi-Angle Product Photos (Front, Back)
                   </h4>
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                  {Object.keys(uploadedImages).length} of 4 Angles Added
+                  {Object.keys(uploadedImages).length} of 2 Angles Added
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 mb-3">
                 Upload images of the product from all 4 mandatory perspectives so customers can inspect every detail before purchase.
               </p>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <div className="grid grid-cols-2 gap-2.5">
                 {/* 1. Front View */}
                 <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center text-center relative group">
                   <span className="text-[10px] font-bold text-slate-600 mb-1.5">1. Front Display</span>
@@ -270,51 +270,6 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
                   )}
                 </div>
 
-                {/* 3. Side View */}
-                <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center text-center relative group">
-                  <span className="text-[10px] font-bold text-slate-600 mb-1.5">3. Side Profile</span>
-                  {uploadedImages.side ? (
-                    <div className="relative w-full h-20 rounded-lg overflow-hidden border border-slate-100 flex items-center justify-center bg-slate-50">
-                      <img src={uploadedImages.side} alt="Side" className="h-full w-full object-contain" />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage('side')}
-                        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-md opacity-80 hover:opacity-100 cursor-pointer"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="w-full h-20 border-2 border-dashed border-slate-200 hover:border-emerald-600 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors p-1">
-                      <Upload className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 mb-1" />
-                      <span className="text-[9px] text-slate-500 font-medium">Upload Side</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageFile(e, 'side')} />
-                    </label>
-                  )}
-                </div>
-
-                {/* 4. Detail / Packaging */}
-                <div className="bg-white border border-slate-200 rounded-xl p-2.5 flex flex-col items-center text-center relative group">
-                  <span className="text-[10px] font-bold text-slate-600 mb-1.5">4. Detail / Box</span>
-                  {uploadedImages.detail ? (
-                    <div className="relative w-full h-20 rounded-lg overflow-hidden border border-slate-100 flex items-center justify-center bg-slate-50">
-                      <img src={uploadedImages.detail} alt="Detail" className="h-full w-full object-contain" />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage('detail')}
-                        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-md opacity-80 hover:opacity-100 cursor-pointer"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="w-full h-20 border-2 border-dashed border-slate-200 hover:border-emerald-600 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors p-1">
-                      <Upload className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 mb-1" />
-                      <span className="text-[9px] text-slate-500 font-medium">Upload Box</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageFile(e, 'detail')} />
-                    </label>
-                  )}
-                </div>
               </div>
             </div>
 

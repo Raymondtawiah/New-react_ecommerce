@@ -49,10 +49,10 @@ export const WhatsAppChatWidget: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+    <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end">
       {/* Chat Window */}
       {isOpen && (
-        <div className="mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+        <div className="mb-3 w-[calc(100vw-2rem)] max-w-sm sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
           {/* Header */}
           <div className="bg-[#073c2c] text-white p-3.5 flex items-center justify-between">
             <div className="flex items-center gap-2.5">

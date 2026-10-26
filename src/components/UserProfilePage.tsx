@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, 
   Mail, 
@@ -59,6 +59,7 @@ interface RegisteredDevice {
 }
 
 interface UserProfilePageProps {
+  user?: any;
   onBackToStore: () => void;
   onNavigateOrders: () => void;
   onNavigateWishlist: () => void;
@@ -67,6 +68,7 @@ interface UserProfilePageProps {
 }
 
 export const UserProfilePage: React.FC<UserProfilePageProps> = ({
+  user,
   onBackToStore,
   onNavigateOrders,
   onNavigateWishlist,
@@ -207,14 +209,38 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
     purchaseDate: 'Today'
   });
 
+  useEffect(() => {
+    if (user) {
+      const name = user.name || (user.email ? user.email.split('@')[0] : '');
+      const parts = name.split(' ');
+      setProfile((prev) => ({
+        ...prev,
+        firstName: parts[0] || prev.firstName,
+        lastName: parts.slice(1).join(' ') || prev.lastName,
+        email: user.email || prev.email,
+      }));
+    }
+  }, [user]);
+
   const notifySave = (msg: string) => {
     setSaveSuccessMsg(msg);
     setTimeout(() => setSaveSuccessMsg(null), 3000);
   };
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    notifySave('Profile details updated successfully!');
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profile),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Save failed');
+      notifySave('Profile details updated successfully!');
+    } catch (err: any) {
+      notifySave(err.message);
+    }
   };
 
   const handleSetDefaultAddress = (id: string) => {

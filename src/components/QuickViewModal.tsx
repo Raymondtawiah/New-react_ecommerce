@@ -154,11 +154,18 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
                 </div>
 
                 {/* Main Visual Display */}
-                <div className="w-full py-4 flex items-center justify-center overflow-hidden">
+                <div className="w-full py-4 flex items-center justify-center gap-3 overflow-hidden">
                   <TechGraphic
                     type={product.graphicType || product.phoneType || 'phone'}
-                    angle={activeAngle}
-                    uploadedImageUrl={currentUploadedImage}
+                    angle="front"
+                    uploadedImageUrl={customUploads.front}
+                    zoomLevel={zoomLevel}
+                    className="scale-115"
+                  />
+                  <TechGraphic
+                    type={product.graphicType || product.phoneType || 'phone'}
+                    angle="back"
+                    uploadedImageUrl={customUploads.back}
                     zoomLevel={zoomLevel}
                     className="scale-115"
                   />

@@ -46,7 +46,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
   allProducts,
   onOpenCart
 }) => {
-  const [selectedAngle, setSelectedAngle] = useState<'duo' | 'front' | 'back' | 'side' | 'detail'>('duo');
+  const [selectedAngle, setSelectedAngle] = useState<'front' | 'back'>('front');
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
   const [isHovering, setIsHovering] = useState(false);
@@ -58,12 +58,9 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
   const [selectedColor, setSelectedColor] = useState(product.colorName || 'Default Titanium');
 
   // Multi-angle options
-  const angleTabs: { key: 'duo' | 'front' | 'back' | 'side' | 'detail'; label: string; iconLabel: string }[] = [
-    { key: 'duo', label: 'Side-by-Side (Duo)', iconLabel: 'Duo' },
+  const angleTabs: { key: 'front' | 'back'; label: string; iconLabel: string }[] = [
     { key: 'front', label: 'Front Display', iconLabel: 'Front' },
-    { key: 'back', label: 'Back & Finish', iconLabel: 'Back' },
-    { key: 'side', label: 'Profile & Ports', iconLabel: 'Side' },
-    { key: 'detail', label: 'Box & Details', iconLabel: 'Box' }
+    { key: 'back', label: 'Back & Finish', iconLabel: 'Back' }
   ];
 
   // Zoom handlers
@@ -219,34 +216,33 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
                 onMouseMove={handleMouseMove}
-                className="relative w-full h-[360px] sm:h-[440px] bg-gradient-to-b from-slate-50 via-slate-100/50 to-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-center overflow-hidden cursor-crosshair select-none"
+                className="relative w-full h-[360px] sm:h-[440px] bg-white rounded-2xl border border-slate-200/80 flex items-center justify-center overflow-x-auto cursor-crosshair select-none"
               >
-                {/* Subtle Grid Accent */}
-                <div
-                  className="absolute inset-0 opacity-15 pointer-events-none"
-                  style={{
-                    backgroundImage: 'radial-gradient(#073c2c 1px, transparent 1px)',
-                    backgroundSize: '24px 24px'
-                  }}
-                />
-
-                {/* Product Graphic / Image */}
-                <div
-                  className="w-full h-full flex items-center justify-center p-6 transition-transform duration-150 ease-out"
-                  style={{
-                    transform: `scale(${zoomLevel})`,
-                    transformOrigin: `${mousePos.x}% ${mousePos.y}%`
-                  }}
-                >
-                  <TechGraphic
-                    category={product.category}
-                    type={product.graphicType || product.phoneType || 'phone'}
-                    angle={selectedAngle}
-                    uploadedImages={product.uploadedImages}
-                    zoomLevel={1}
-                    className="w-full h-full max-h-[340px]"
-                  />
-                </div>
+               {/* Product Graphic / Image */}
+               <div
+                 className="w-full h-full flex items-center justify-center gap-4 p-6 transition-transform duration-150 ease-out"
+                 style={{
+                   transform: `scale(${zoomLevel})`,
+                   transformOrigin: `${mousePos.x}% ${mousePos.y}%`
+                 }}
+               >
+                 <TechGraphic
+                   category={product.category}
+                   type={product.graphicType || product.phoneType || 'phone'}
+                   angle="front"
+                   uploadedImages={product.uploadedImages}
+                   zoomLevel={1}
+                   className="w-auto h-full max-h-[340px]"
+                 />
+                 <TechGraphic
+                   category={product.category}
+                   type={product.graphicType || product.phoneType || 'phone'}
+                   angle="back"
+                   uploadedImages={product.uploadedImages}
+                   zoomLevel={1}
+                   className="w-auto h-full max-h-[340px]"
+                 />
+               </div>
 
                 {/* Perspective Badge in bottom left */}
                 <div className="absolute bottom-3 left-3 bg-black/75 backdrop-blur-xs text-white text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm">
@@ -260,78 +256,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                 </div>
               </div>
 
-              {/* Perspective Selector Bar */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-700">Choose Camera Perspective:</span>
-                  <label className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-lg cursor-pointer transition-colors">
-                    <Upload className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Upload Photo to This Angle</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) =>
-                        handleAngleFileUpload(
-                          e,
-                          selectedAngle === 'duo' ? 'front' : selectedAngle
-                        )
-                      }
-                    />
-                  </label>
-                </div>
-
-                <div className="grid grid-cols-5 gap-2">
-                  {angleTabs.map((tab) => {
-                    const customImg =
-                      tab.key === 'duo'
-                        ? product.uploadedImages?.front
-                        : product.uploadedImages?.[tab.key];
-                    const hasCustom = Boolean(customImg);
-                    const isSelected = selectedAngle === tab.key;
-
-                    return (
-                      <button
-                        key={tab.key}
-                        onClick={() => setSelectedAngle(tab.key)}
-                        className={`relative rounded-xl border p-2 text-center transition-all cursor-pointer flex flex-col items-center justify-between h-20 ${
-                          isSelected
-                            ? 'border-[#073c2c] bg-emerald-50/60 ring-2 ring-[#073c2c] text-emerald-950 font-bold'
-                            : 'border-slate-200 hover:border-slate-300 bg-white text-slate-600'
-                        }`}
-                      >
-                        {hasCustom && customImg ? (
-                          <div className="w-full h-10 rounded overflow-hidden flex items-center justify-center bg-slate-100">
-                            <img
-                              src={customImg}
-                              alt={tab.label}
-                              className="h-full w-full object-contain"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-full h-10 flex items-center justify-center">
-                            <TechGraphic
-                              category={product.category}
-                              type={product.graphicType || product.phoneType || 'phone'}
-                              angle={tab.key}
-                              uploadedImages={product.uploadedImages}
-                              zoomLevel={1}
-                              className="h-9 w-9 object-contain"
-                            />
-                          </div>
-                        )}
-                        <span className="text-[10px] font-bold leading-tight mt-1 line-clamp-1">
-                          {tab.label}
-                        </span>
-                        {hasCustom && (
-                          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+             </div>
 
             {/* RIGHT COLUMN: Product Details, Pricing & Purchase Actions (5 cols) */}
             <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
@@ -744,7 +669,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                     <TechGraphic
                       category={rel.category}
                       type={rel.graphicType || rel.phoneType || 'phone'}
-                      angle="duo"
+                      angle="front"
                       uploadedImages={rel.uploadedImages}
                       zoomLevel={1}
                       className="w-full h-full object-contain group-hover:scale-105 transition-transform"
