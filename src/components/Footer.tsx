@@ -23,7 +23,7 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1.5 h-6 bg-emerald-400 rounded-full" />
               <span className="text-lg font-black tracking-tight text-white">
-                FRANKO TRADING
+                APEX TECH GHANA
               </span>
             </div>
             <p className="text-xs text-slate-300/80 leading-relaxed">
@@ -152,7 +152,7 @@ export const Footer: React.FC<FooterProps> = ({
         {/* Bottom copyright & policy links */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <div>
-            © 2025 Franko Trading Enterprise Ltd. All rights reserved.
+            © 2025 ApexTech Ghana Ltd. All rights reserved.
           </div>
           <div className="flex items-center gap-4">
             <a href="#privacy" className="hover:text-slate-200 transition-colors">Privacy Policy</a>

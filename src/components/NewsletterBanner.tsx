@@ -23,7 +23,7 @@ export const NewsletterBanner: React.FC = () => {
           {/* Left Text */}
           <div className="max-w-xl text-center lg:text-left">
             <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-              Subscribe to Franko Flash Offers
+              Subscribe to ApexTech Flash Offers
             </h3>
             <p className="text-xs sm:text-sm text-emerald-100/80 mt-1.5 leading-relaxed">
               Get direct weekly discounts on flagship smartphones, home electronics, and seasonal promotions delivered to your inbox.
@@ -36,7 +36,7 @@ export const NewsletterBanner: React.FC = () => {
               <div className="bg-emerald-950/80 border border-emerald-500/40 rounded-2xl py-3 px-5 flex items-center gap-2.5 text-emerald-200 text-xs">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
                 <span>
-                  Thank you! You've unlocked coupon <strong className="text-white font-mono">FRANKO50</strong> for GH₵ 50 off your next smartphone!
+                  Thank you! You've unlocked coupon <strong className="text-white font-mono">APEX50</strong> for GH₵ 50 off your next smartphone!
                 </span>
               </div>
             ) : (

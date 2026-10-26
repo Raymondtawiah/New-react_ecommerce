@@ -22,7 +22,7 @@ export const ValuePropositionCards: React.FC = () => {
       iconBg: 'bg-teal-50 text-teal-600 border border-teal-100',
     },
     {
-      title: 'Franko Warranty',
+      title: 'ApexTech Warranty',
       description: '12-month comprehensive parts and labor warranty support.',
       icon: Smartphone,
       iconBg: 'bg-emerald-50 text-emerald-500 border border-emerald-100',

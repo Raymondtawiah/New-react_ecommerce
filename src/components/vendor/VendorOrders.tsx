@@ -27,7 +27,7 @@ export const VendorOrders: React.FC<VendorOrdersProps> = ({ orders, onUpdateOrde
         <div>
           <h3 className="text-base font-extrabold text-slate-900">Ghana Dispatch & Logistics Queue</h3>
           <p className="text-xs text-slate-500">
-            Fulfill and track orders across Franko nationwide courier hubs
+            Fulfill and track orders across ApexTech nationwide courier hubs
           </p>
         </div>
 

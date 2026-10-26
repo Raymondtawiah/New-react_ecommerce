@@ -16,7 +16,7 @@ export const VendorShowrooms: React.FC<VendorShowroomsProps> = ({ showrooms, onT
   const handleTransfer = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fromBranch || !toBranch || fromBranch === toBranch) {
-      alert('Please select two distinct Franko showroom branches.');
+      alert('Please select two distinct ApexTech showroom branches.');
       return;
     }
     onTransferStock(fromBranch, toBranch, transferAmount);

@@ -337,7 +337,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
               <div className="mt-4 flex items-center gap-4 text-[10px] text-slate-500">
                 <div className="flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>12M Official Franko Warranty</span>
+                  <span>12M Official ApexTech Warranty</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Truck className="w-3.5 h-3.5 text-emerald-600" />

@@ -59,7 +59,7 @@ export const VendorPayouts: React.FC<VendorPayoutsProps> = ({ payouts, onRequest
           <div className="mt-6 pt-4 border-t border-emerald-800/60 flex items-center gap-6 text-xs text-emerald-200">
             <div>
               <span className="text-[10px] uppercase text-emerald-400 block">Settlement Fee</span>
-              <strong className="text-white">0% (Franko Partner Rate)</strong>
+              <strong className="text-white">0% (ApexTech Partner Rate)</strong>
             </div>
             <div>
               <span className="text-[10px] uppercase text-emerald-400 block">Processing Speed</span>

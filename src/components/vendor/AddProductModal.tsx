@@ -145,7 +145,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
       colorName,
       graphicType,
       phoneType: graphicType,
-      description: description || `Certified authentic ${getCategoryName(category)} backed by 12 months official Franko warranty.`,
+      description: description || `Certified authentic ${getCategoryName(category)} backed by 12 months official ApexTech warranty.`,
       inStockBranches: ['Kwame Nkrumah Circle (Flagship)', 'Adum Kumasi', 'Takoradi Central'],
       uploadedImages
     };
@@ -481,7 +481,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
                 className="bg-[#073c2c] hover:bg-[#05291e] text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 cursor-pointer shadow-sm transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                <span>Publish to Franko Store</span>
+                <span>Publish to ApexTech Store</span>
               </button>
             </div>
           </form>

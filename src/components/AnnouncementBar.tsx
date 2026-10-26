@@ -57,7 +57,7 @@ export const AnnouncementBar: React.FC<AnnouncementBarProps> = ({
       icon: Flame,
       headline: 'Mid-Week Tech Madness: Up to 35% OFF Original Smartphones & Laptops!',
       subtext: 'Exclusive prices on Samsung, Apple & HP devices.',
-      couponCode: 'FRANKO35',
+      couponCode: 'APEX35',
       ctaText: 'Claim Deal',
       actionType: 'deals'
     },
@@ -77,7 +77,7 @@ export const AnnouncementBar: React.FC<AnnouncementBarProps> = ({
       badgeColor: 'bg-amber-400 text-slate-950 font-black',
       icon: ShieldCheck,
       headline: 'Official 12 - 24 Months Manufacturer Warranty & Free Screen Protector',
-      subtext: 'With every brand-new phone & laptop purchase at Franko Trading.',
+      subtext: 'With every brand-new phone & laptop purchase at ApexTech Ghana.',
       ctaText: 'Learn More',
       actionType: 'showrooms'
     },

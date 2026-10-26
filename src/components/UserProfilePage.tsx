@@ -86,7 +86,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
     gender: 'Male',
     birthDate: '1995-08-14',
     preferredDispatchHub: 'Kwame Nkrumah Circle Flagship Hub',
-    membershipTier: 'Franko Platinum Tech VIP',
+    membershipTier: 'ApexTech Platinum Tech VIP',
     loyaltyPoints: 1480,
     avatarUrl: ''
   });
@@ -156,7 +156,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
     }
   ]);
 
-  // Registered Tech Devices under Franko Warranty
+  // Registered Tech Devices under ApexTech Warranty
   const [devices, setDevices] = useState<RegisteredDevice[]>([
     {
       id: 'dev-1',
@@ -164,7 +164,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
       category: 'phone',
       serialImei: '358921102948210',
       purchaseDate: '15 Jan 2024',
-      warrantyExpiry: '15 Jan 2026 (24 Months Franko Seal)',
+      warrantyExpiry: '15 Jan 2026 (24 Months ApexTech Seal)',
       status: 'active'
     },
     {
@@ -267,7 +267,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
       category: newTech.category,
       serialImei: newTech.serialImei,
       purchaseDate: newTech.purchaseDate,
-      warrantyExpiry: '24 Months Franko Guaranteed Warranty',
+      warrantyExpiry: '24 Months ApexTech Guaranteed Warranty',
       status: 'active'
     };
     setDevices((prev) => [newEntry, ...prev]);
@@ -359,7 +359,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
                 <Sparkles className="w-6 h-6 animate-pulse" />
               </div>
               <div>
-                <span className="text-[10px] uppercase font-bold text-amber-200 tracking-wider">Franko Rewards</span>
+                <span className="text-[10px] uppercase font-bold text-amber-200 tracking-wider">ApexTech Rewards</span>
                 <div className="text-lg font-black text-white">
                   {profile.loyaltyPoints.toLocaleString()} Points
                 </div>
@@ -1076,7 +1076,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
           <div onClick={() => setShowRegisterTechModal(false)} className="fixed inset-0 bg-black/50 backdrop-blur-xs" />
           <div className="min-h-screen px-4 flex items-center justify-center p-4">
             <div className="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl z-10 border border-slate-200">
-              <h3 className="text-base font-extrabold text-slate-900 mb-1">Register Franko Tech Device</h3>
+              <h3 className="text-base font-extrabold text-slate-900 mb-1">Register ApexTech Tech Device</h3>
               <p className="text-xs text-slate-500 mb-4">Validate your manufacturer warranty seal and showroom support.</p>
 
               <form onSubmit={handleRegisterDevice} className="space-y-3.5">

@@ -17,7 +17,7 @@ export const ShowroomsModal: React.FC<ShowroomsModalProps> = ({ isOpen, onClose 
         <div className="relative bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl z-10 border border-slate-200">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h3 className="text-base font-extrabold text-slate-900">35+ Franko Showrooms in Ghana</h3>
+              <h3 className="text-base font-extrabold text-slate-900">35+ ApexTech Showrooms in Ghana</h3>
               <p className="text-xs text-slate-500">Pick up your order or get instant warranty servicing</p>
             </div>
             <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1">
@@ -80,10 +80,10 @@ export const AccountModal: React.FC<{ isOpen: boolean; onClose: () => void }> = 
           </div>
 
           <h3 className="text-base font-extrabold text-slate-900">
-            {isLoggedIn ? 'Account Active' : 'Sign in to Franko Account'}
+            {isLoggedIn ? 'Account Active' : 'Sign in to ApexTech Account'}
           </h3>
           <p className="text-xs text-slate-500 mt-1 mb-5">
-            {isLoggedIn ? 'Welcome back! You have 120 Franko Loyalty Points.' : 'Enter your Ghana phone number to track orders and earn warranty rewards.'}
+            {isLoggedIn ? 'Welcome back! You have 120 ApexTech Loyalty Points.' : 'Enter your Ghana phone number to track orders and earn warranty rewards.'}
           </p>
 
           {isLoggedIn ? (

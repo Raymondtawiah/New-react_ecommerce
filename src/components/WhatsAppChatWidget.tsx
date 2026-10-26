@@ -6,7 +6,7 @@ export const WhatsAppChatWidget: React.FC = () => {
   const [messages, setMessages] = useState<Array<{ sender: 'bot' | 'user'; text: string; time: string }>>([
     {
       sender: 'bot',
-      text: 'Akwaaba! Welcome to Franko Trading Ghana official support desk. Looking for a specific phone, warranty check, or branch stock inquiry in Accra, Kumasi, or Takoradi?',
+      text: 'Akwaaba! Welcome to ApexTech Ghana official support desk. Looking for a specific phone, warranty check, or branch stock inquiry in Accra, Kumasi, or Takoradi?',
       time: 'Just now'
     }
   ]);
@@ -28,9 +28,9 @@ export const WhatsAppChatWidget: React.FC = () => {
 
     // Responsive intelligent bot reply
     setTimeout(() => {
-      let reply = "All smartphones at Franko Trading include an official 12-month manufacturer warranty with free delivery in Accra and Kumasi. You can also visit our Kwame Nkrumah Circle flagship branch or call 030 222 5651!";
+      let reply = "All smartphones at ApexTech Ghana include an official 12-month manufacturer warranty with free delivery in Accra and Kumasi. You can also visit our Kwame Nkrumah Circle flagship branch or call 030 222 5651!";
       if (userMsg.toLowerCase().includes('price') || userMsg.toLowerCase().includes('cost')) {
-        reply = "Our prices are fully matched to official manufacturer factory rates in Ghana Cedis (GH₵). You can filter by price or use code FRANKO50 for GH₵ 50 off!";
+        reply = "Our prices are fully matched to official manufacturer factory rates in Ghana Cedis (GH₵). You can filter by price or use code APEX50 for GH₵ 50 off!";
       } else if (userMsg.toLowerCase().includes('samsung') || userMsg.toLowerCase().includes('iphone')) {
         reply = "We have authentic factory-sealed Samsung Galaxy and Apple iPhones in stock right now with 1-year official warranty and same-day delivery.";
       } else if (userMsg.toLowerCase().includes('delivery') || userMsg.toLowerCase().includes('location')) {
@@ -60,7 +60,7 @@ export const WhatsAppChatWidget: React.FC = () => {
                 <MessageSquare className="w-4 h-4 text-emerald-300" />
               </div>
               <div>
-                <h4 className="text-xs font-bold leading-tight">Franko Trading Desk</h4>
+                <h4 className="text-xs font-bold leading-tight">ApexTech Support Desk</h4>
                 <div className="flex items-center gap-1 text-[10px] text-emerald-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   <span>Online • Hotline: 030 222 5651</span>
@@ -105,7 +105,7 @@ export const WhatsAppChatWidget: React.FC = () => {
               Delivery time?
             </button>
             <button
-              onClick={() => setInputText('How does Franko Warranty work?')}
+              onClick={() => setInputText('How does ApexTech Warranty work?')}
               className="bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-slate-50 cursor-pointer"
             >
               Warranty coverage?
@@ -149,7 +149,7 @@ export const WhatsAppChatWidget: React.FC = () => {
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="relative w-12 h-12 rounded-full bg-[#15803d] hover:bg-[#166534] text-white shadow-xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95 cursor-pointer"
-          title="Chat with Franko Desk"
+          title="Chat with ApexTech Desk"
         >
           <MessageSquare className="w-6 h-6 fill-current" />
           {!isOpen && (
