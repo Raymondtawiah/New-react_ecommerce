@@ -19,10 +19,11 @@ import { QuickViewModal } from './components/QuickViewModal';
 import { WhatsAppChatWidget } from './components/WhatsAppChatWidget';
 import { CategoriesMenu } from './components/CategoriesMenu';
 import { ShowroomsModal, AccountModal } from './components/InfoModals';
-import { Login } from './components/Login';
+import { RiderPage } from './components/RiderPage';
 import { VendorDashboard } from './components/vendor/VendorDashboard';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminLoginModal } from './components/admin/AdminLoginModal';
+import { Login } from './components/Login';
 import { ScrollZoomSection } from './components/ScrollZoomSection';
 import { ProductDetailsPage } from './components/ProductDetailsPage';
 import { CustomerOrdersPage, CustomerOrder } from './components/CustomerOrdersPage';
@@ -88,7 +89,7 @@ const INITIAL_CUSTOMER_ORDERS: CustomerOrder[] = [
 
 export default function App() {
   // Navigation View: 'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor' | 'profile' | 'admin'
-  const [viewMode, setViewMode] = useState<'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor' | 'profile' | 'admin'>('storefront');
+  const [viewMode, setViewMode] = useState<'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor' | 'profile' | 'admin' | 'rider'>('storefront');
 
   // Administrator Session & Authentication
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -197,17 +198,12 @@ export default function App() {
   const [showroomsOpen, setShowroomsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  // User state (not persisted; login required each session)
   const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) setUser(JSON.parse(savedUser));
-  }, []);
-
-  useEffect(() => {
-    if (user) localStorage.setItem('user', JSON.stringify(user));
-    else localStorage.removeItem('user');
-  }, [user]);
+  const [isVendorLoggedIn, setIsVendorLoggedIn] = useState(false);
+  const [vendorUser, setVendorUser] = useState<any>(null);
+  const [isRiderLoggedIn, setIsRiderLoggedIn] = useState(false);
+  const [riderUser, setRiderUser] = useState<any>(null);
 
   // Cart subtotal calculation
   const cartSubtotal = useMemo(() => {
@@ -535,9 +531,16 @@ export default function App() {
           setViewMode('orders');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        onOpenAccount={() => { if (user) setViewMode('profile'); else setLoginOpen(true); }}
-        user={user}
-        onOpenVendorPortal={handleOpenAdminPortal}
+        onOpenAccount={() => {
+          if (isRiderLoggedIn || isVendorLoggedIn) setViewMode('profile');
+          else if (user) setViewMode('profile');
+          else setLoginOpen(true);
+        }}
+        user={isRiderLoggedIn ? riderUser : isVendorLoggedIn ? vendorUser : user}
+        isVendorLoggedIn={isVendorLoggedIn}
+        isRiderLoggedIn={isRiderLoggedIn}
+         onOpenVendorPortal={() => { setViewMode('vendor'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+         onOpenRiderPage={() => { setViewMode('rider'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         onOpenAdminPortal={handleOpenAdminPortal}
         isAdmin={isAdminLoggedIn}
         cartCount={cartCount}
@@ -622,7 +625,7 @@ export default function App() {
             onViewProductOnStorefront={(prod) => handleViewProductDetails(prod)}
           />
         </div>
-      ) : viewMode === 'product-details' && selectedProduct ? (
+        ) : viewMode === 'product-details' && selectedProduct ? (
         /* DEDICATED FULL PRODUCT DETAILS PAGE */
         <div className="flex-1 animate-page-zoom-in">
           <ProductDetailsPage
@@ -665,11 +668,23 @@ export default function App() {
       ) : viewMode === 'profile' ? (
         /* CUSTOMER PROFILE & ACCOUNT MANAGEMENT PAGE */
         <div className="flex-1 animate-page-zoom-in">
-          <UserProfilePage
-            onBackToStore={() => {
-              setViewMode('storefront');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+           <UserProfilePage
+             user={isRiderLoggedIn ? riderUser : isVendorLoggedIn ? vendorUser : user}
+             onBackToStore={() => {
+             setViewMode('storefront');
+             window.scrollTo({ top: 0, behavior: 'smooth' });
+           }}
+            onLogout={() => {
+             if (isVendorLoggedIn) {
+               setIsVendorLoggedIn(false);
+               setVendorUser(null);
+             } else {
+               setUser(null);
+             }
+             setViewMode('storefront');
+             window.scrollTo({ top: 0, behavior: 'smooth' });
+           }}
+           onOpenAdminPortal={isAdminLoggedIn ? handleOpenAdminPortal : undefined}
             onNavigateOrders={() => {
               setViewMode('orders');
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -678,8 +693,7 @@ export default function App() {
               setViewMode('wishlist');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onOpenAdminPortal={handleOpenAdminPortal}
-            ordersCount={customerOrders.length}
+             ordersCount={customerOrders.length}
             wishlistCount={wishlistIds.length}
           />
         </div>
@@ -815,17 +829,35 @@ export default function App() {
       />
 
       {/* Customer Login / Sign Up Modal */}
-      {loginOpen && (
-        <Login
-          onClose={() => setLoginOpen(false)}
-          onLogin={(email: string) => setUser({ name: email.split('@')[0], email })}
-          onSignUp={(name: string, email: string) => setUser({ name, email })}
-          onOpenAdminLogin={() => {
-            setLoginOpen(false);
-            setAdminLoginModalOpen(true);
-          }}
-        />
-      )}
+       {loginOpen && (
+         <Login
+           onClose={() => setLoginOpen(false)}
+           onLogin={(email: string) => setUser({ name: email.split('@')[0], email })}
+           onSignUp={(name: string, email: string) => setUser({ name, email })}
+           onAuthSuccess={(data: any) => {
+             if (data?.user) {
+               if (data.admin) {
+                 setIsAdminLoggedIn(true);
+                 setAdminUser({ ...INITIAL_ADMIN_PROFILE, email: data.user.email, name: data.user.name, lastLogin: new Date().toISOString() });
+               } else {
+                 setUser(data.user);
+               }
+             }
+           }}
+           onVendorLogin={(vendor: any) => {
+             setIsVendorLoggedIn(true);
+             setVendorUser(vendor);
+             setViewMode('profile');
+             window.scrollTo({ top: 0, behavior: 'smooth' });
+           }}
+           onRiderLogin={(rider: any) => {
+             setIsRiderLoggedIn(true);
+             setRiderUser(rider);
+             setViewMode('profile');
+             window.scrollTo({ top: 0, behavior: 'smooth' });
+           }}
+         />
+       )}
 
       {/* Central Administrator Authentication Modal */}
       <AdminLoginModal

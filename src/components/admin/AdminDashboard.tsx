@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   LayoutDashboard,
   Package,
@@ -82,9 +82,59 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onViewProductOnStorefront
 }) => {
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'catalog' | 'orders' | 'showrooms' | 'customers' | 'finance' | 'settings'
+    'overview' | 'catalog' | 'orders' | 'showrooms' | 'customers' | 'vendors' | 'finance' | 'settings'
   >('overview');
 
+  const [vendors, setVendors] = useState<any[]>([]);
+  const [vendorFlash, setVendorFlash] = useState('');
+  const [vendorCodeModal, setVendorCodeModal] = useState('');
+  const [showVendorCodeModal, setShowVendorCodeModal] = useState(false);
+  const [vendorCopied, setVendorCopied] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/vendors')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.vendors)) setVendors(data.vendors);
+      })
+      .catch(() => {});
+  }, []);
+
+  const ghanaCardRef = useRef<HTMLInputElement>(null);
+
+  const formatGhanaCard = (value: string) => {
+    let cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!cleaned.startsWith('GHA')) {
+      cleaned = 'GHA' + cleaned.replace(/^GHA/, '');
+    }
+    const digits = cleaned.slice(3).replace(/[^0-9]/g, '');
+    const main = digits.slice(0, 9);
+    const check = digits.slice(9, 10);
+    let result = 'GHA';
+    if (main.length > 0) result += '-' + main;
+    if (check.length > 0) result += '-' + check;
+    return result;
+  };
+
+  const handleGhanaCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatGhanaCard(e.target.value);
+    setVendorForm({ ...vendorForm, ghanaCardNumber: formatted });
+    requestAnimationFrame(() => {
+      if (ghanaCardRef.current) {
+        ghanaCardRef.current.setSelectionRange(formatted.length, formatted.length);
+      }
+    });
+  };
+
+  const [vendorForm, setVendorForm] = useState({
+    businessName: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    ghanaCardNumber: '',
+    ghanaCardImage: '',
+    businessAddress: '',
+  });
   const [addProductModalOpen, setAddProductModalOpen] = useState(false);
   const [productSearch, setProductSearch] = useState('');
   const [selectedProductCategory, setSelectedProductCategory] = useState('all');
@@ -305,8 +355,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 { id: 'catalog', label: 'Tech Catalog & SKUs', icon: Boxes, badge: products.length },
                 { id: 'orders', label: 'Orders & Express Dispatch', icon: Package, badge: activeOrdersCount },
                 { id: 'showrooms', label: 'Ghana Hubs & Stock (28+)', icon: Store },
-                { id: 'customers', label: 'Customers Directory', icon: Users, badge: customers.length },
-                { id: 'finance', label: 'Finance & MoMo Payouts', icon: Wallet },
+                 { id: 'customers', label: 'Customers Directory', icon: Users, badge: customers.length },
+                 { id: 'vendors', label: 'Vendor Registration', icon: UserCheck },
+                 { id: 'finance', label: 'Finance & MoMo Payouts', icon: Wallet },
                 { id: 'settings', label: 'Admin Security & Roles', icon: Settings }
               ].map((item) => {
                 const Icon = item.icon;
@@ -1085,7 +1136,122 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
           )}
 
-          {/* TAB 6: FINANCE & MOMO PAYOUTS */}
+           {/* TAB: VENDOR REGISTRATION */}
+           {activeTab === 'vendors' && (
+             <div className="space-y-6 animate-in fade-in duration-150">
+               <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-4">
+                 <div className="pb-4 border-b border-slate-100">
+                   <h3 className="text-base font-extrabold text-slate-900">Vendor Registration & Ghana Card Verification</h3>
+                   <p className="text-xs text-slate-500">Register new vendors and capture their Ghana Card details.</p>
+                 </div>
+                 {vendorFlash && <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold px-3 py-2 rounded-xl">{vendorFlash}</div>}
+                  <div className="space-y-4 max-w-3xl">
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                     <div>
+                       <label className="block text-xs font-bold text-slate-700 mb-1">Business Name</label>
+                       <input className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" placeholder="e.g. ApexTech Ghana" value={vendorForm.businessName} onChange={(e) => setVendorForm({ ...vendorForm, businessName: e.target.value })} required />
+                     </div>
+                     <div>
+                       <label className="block text-xs font-bold text-slate-700 mb-1">Contact Person</label>
+                       <input className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" placeholder="e.g. Kwame Mensah" value={vendorForm.contactName} onChange={(e) => setVendorForm({ ...vendorForm, contactName: e.target.value })} required />
+                     </div>
+                     <div>
+                       <label className="block text-xs font-bold text-slate-700 mb-1">Email</label>
+                       <input type="email" className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" placeholder="vendor@example.com" value={vendorForm.email} onChange={(e) => setVendorForm({ ...vendorForm, email: e.target.value })} required />
+                     </div>
+                     <div>
+                       <label className="block text-xs font-bold text-slate-700 mb-1">Phone</label>
+                       <input className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" placeholder="024 000 0000" value={vendorForm.phone} onChange={(e) => setVendorForm({ ...vendorForm, phone: e.target.value })} required />
+                     </div>
+                     <div>
+                       <label className="block text-xs font-bold text-slate-700 mb-1">Ghana Card Number</label>
+                       <input ref={ghanaCardRef} className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" placeholder="GHA-XXXXXXXXX-X" value={vendorForm.ghanaCardNumber} onChange={handleGhanaCardChange} required />
+                      </div>
+                    </div>
+                    <div>
+                     <label className="block text-xs font-bold text-slate-700 mb-1">Ghana Card Image</label>
+                     <input type="file" accept="image/*" className="text-xs" onChange={(e) => {
+                       const file = e.target.files?.[0];
+                       if (file) {
+                         const reader = new FileReader();
+                         reader.onload = (ev) => setVendorForm({ ...vendorForm, ghanaCardImage: ev.target?.result as string });
+                         reader.readAsDataURL(file);
+                       }
+                     }} />
+                     {vendorForm.ghanaCardImage && <img src={vendorForm.ghanaCardImage} alt="Ghana Card" className="mt-2 h-24 rounded-lg border border-slate-200" />}
+                   </div>
+                   <div>
+                     <label className="block text-xs font-bold text-slate-700 mb-1">Business Address</label>
+                     <textarea className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" rows={3} placeholder="Street, city, region" value={vendorForm.businessAddress} onChange={(e) => setVendorForm({ ...vendorForm, businessAddress: e.target.value })} required />
+                   </div>
+                     <button type="button" onClick={async () => { if (!/^GHA-\d{9}-\d$/.test(vendorForm.ghanaCardNumber)) { alert('Invalid Ghana Card number. Format: GHA-XXXXXXXXX-X'); return; } const res = await fetch('/api/vendors', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(vendorForm) }); const data = await res.json(); if (data.vendor?.vendorCode) { setVendorFlash('Vendor registered. Unique code: ' + data.vendor.vendorCode); setVendorCodeModal(data.vendor.vendorCode); setVendorCopied(false); setShowVendorCodeModal(true); } const list = await fetch('/api/vendors'); const listData = await list.json(); if (Array.isArray(listData.vendors)) setVendors(listData.vendors); }} className="bg-[#073c2c] hover:bg-[#05291e] text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer">Register Vendor</button>
+                   </div>
+                </div>
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-3 mt-6">
+                  <h4 className="text-sm font-extrabold text-slate-900">Registered Vendors</h4>
+                  {vendors.length === 0 ? (
+                    <p className="text-xs text-slate-500">No vendors registered yet.</p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs text-left">
+                        <thead>
+                          <tr className="border-b border-slate-200 text-slate-400 uppercase text-[10px] font-bold">
+                            <th className="pb-2">Business</th>
+                            <th className="pb-2">Contact</th>
+                            <th className="pb-2">Email</th>
+                            <th className="pb-2">Ghana Card</th>
+                            <th className="pb-2">Unique Code</th>
+                            <th className="pb-2">Status</th>
+                            <th className="pb-2">Code</th>
+                          </tr>
+                        </thead>
+<tbody className="divide-y divide-slate-100">
+                          {vendors.map((v, idx) => (
+                            <tr key={idx}>
+                              <td className="py-2 font-bold">{v.businessName}</td>
+                              <td className="py-2">{v.contactName}</td>
+                              <td className="py-2">{v.email}</td>
+                              <td className="py-2">{v.ghanaCardNumber}</td>
+                              <td className="py-2 font-mono">{v.vendorCode}</td>
+                              <td className="py-2">
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    await fetch(`/api/vendors/${idx}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ disabled: !v.disabled }) });
+                                    const res = await fetch('/api/vendors');
+                                    const data = await res.json();
+                                    if (Array.isArray(data.vendors)) setVendors(data.vendors);
+                                  }}
+                                  className={`text-xs font-bold px-2 py-1 rounded-lg cursor-pointer ${v.disabled ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`}
+                                >
+                                  {v.disabled ? 'Disabled' : 'Enabled'}
+                                </button>
+                              </td>
+                              <td className="py-2">
+                                <button
+                                  type="button"
+                                  className="text-xs font-bold text-[#073c2c] hover:underline cursor-pointer"
+onClick={async () => {
+                                  const res = await fetch(`/api/vendors/generate/${idx}`, { method: 'POST' });
+                                  const data = await res.json();
+                                  if (data.code) { setVendorCodeModal(data.code); setVendorCopied(false); setShowVendorCodeModal(true); }
+                                  else alert(data.error || 'Failed');
+                                }}
+                                >
+                                  Generate Code
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+           {/* TAB 6: FINANCE & MOMO PAYOUTS */}
           {activeTab === 'finance' && (
             <div className="space-y-6 animate-in fade-in duration-150">
               <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-4">
@@ -1507,8 +1673,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       )}
 
-      {/* Add Product Modal */}
-      <AddProductModal
+       {/* Vendor Code Modal */}
+       {showVendorCodeModal && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs">
+           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+             <h3 className="text-base font-extrabold text-slate-900 mb-2">Vendor Unique Code</h3>
+             <p className="text-xs text-slate-500 mb-4">Copy and send this code to the vendor. It will not be shown again.</p>
+             <div className="flex items-center gap-2 bg-slate-100 rounded-xl p-3">
+               <span className="font-mono text-sm font-bold text-slate-900 flex-1">{vendorCodeModal}</span>
+               <button
+                 type="button"
+                 onClick={() => { navigator.clipboard.writeText(vendorCodeModal); setVendorCopied(true); }}
+                 className="bg-[#073c2c] hover:bg-[#05291e] text-white px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer"
+               >
+                 {vendorCopied ? 'Copied' : 'Copy'}
+               </button>
+             </div>
+             <button
+               type="button"
+               onClick={() => { setShowVendorCodeModal(false); setVendorCodeModal(''); setVendorCopied(false); }}
+               className="mt-4 w-full bg-slate-200 hover:bg-slate-300 text-slate-700 py-2 rounded-xl text-xs font-bold cursor-pointer"
+             >
+               Close
+             </button>
+           </div>
+         </div>
+       )}
+
+       {/* Add Product Modal */}
+       <AddProductModal
         isOpen={addProductModalOpen}
         onClose={() => setAddProductModalOpen(false)}
         onAddProduct={onAddProduct}

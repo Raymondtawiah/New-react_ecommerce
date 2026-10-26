@@ -126,7 +126,7 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
                     </div>
                     <div>
                       <div className="font-extrabold text-slate-900">{prod.name}</div>
-                      <div className="text-[10px] text-slate-400">{prod.colorName}</div>
+                      <div className="text-[10px] text-slate-400">{prod.colorName || ''}</div>
                     </div>
                   </div>
                 </td>
@@ -139,11 +139,11 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
 
                 <td className="py-3">
                   <span className="font-bold text-slate-700">{prod.brand}</span>
-                  <div className="text-[10px] text-slate-400 uppercase">{prod.brandCategory}</div>
+                  <div className="text-[10px] text-slate-400 uppercase">{prod.brandCategory || ''}</div>
                 </td>
 
                 <td className="py-3 text-[11px] text-slate-500 max-w-[160px] truncate">
-                  {prod.specs.join(' • ')}
+                  {prod.specs?.join(' • ') || ''}
                 </td>
 
                 <td className="py-3 text-right font-black text-slate-900 tabular-nums">
@@ -180,7 +180,7 @@ export const VendorProducts: React.FC<VendorProductsProps> = ({
                 <td className="py-3">
                   <div className="flex items-center gap-1.5 text-slate-600 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <span className="truncate max-w-[130px]">{prod.stockStatus}</span>
+                    <span className="truncate max-w-[130px]">{prod.stockStatus || ''}</span>
                   </div>
                 </td>
 

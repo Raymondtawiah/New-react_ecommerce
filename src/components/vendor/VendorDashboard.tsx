@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   LayoutDashboard,
   Smartphone,
@@ -12,7 +12,7 @@ import {
   User,
   LogOut,
   ChevronRight,
-  ExternalLink
+  Truck,
 } from 'lucide-react';
 import { Product } from '../../types';
 import { VendorOrder, ShowroomStockAllocation, VendorPayout, WarrantyClaim } from '../../types/vendor';
@@ -55,11 +55,63 @@ export const VendorDashboard: React.FC<VendorDashboardProps> = ({
   onRequestPayout,
   onViewProductOnStorefront
 }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'showrooms' | 'payouts' | 'warranty'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'showrooms' | 'payouts' | 'warranty' | 'riders'>('overview');
+  const [riderForm, setRiderForm] = useState({ name: '', phone: '', vehicleType: 'motorcycle', licenseNumber: '', ghanaCardNumber: '' });
+  const [riders, setRiders] = useState<any[]>([]);
+  const [riderCodeModal, setRiderCodeModal] = useState('');
+  const [showRiderCodeModal, setShowRiderCodeModal] = useState(false);
+  const [riderCopied, setRiderCopied] = useState(false);
+  const licenseRef = useRef<HTMLInputElement>(null);
+  const ghanaCardRef = useRef<HTMLInputElement>(null);
+
+  const formatLicense = (value: string) => {
+    let cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!cleaned.startsWith('DL')) cleaned = 'DL' + cleaned.replace(/^DL/, '');
+    const digits = cleaned.slice(2).replace(/[^0-9]/g, '');
+    const main = digits.slice(0, 7);
+    let result = 'DL';
+    if (main.length > 0) result += '-' + main;
+    return result;
+  };
+
+  const handleLicenseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatLicense(e.target.value);
+    setRiderForm({ ...riderForm, licenseNumber: formatted });
+    requestAnimationFrame(() => {
+      if (licenseRef.current) licenseRef.current.setSelectionRange(formatted.length, formatted.length);
+    });
+  };
+
+  const formatGhanaCard = (value: string) => {
+    let cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!cleaned.startsWith('GHA')) cleaned = 'GHA' + cleaned.replace(/^GHA/, '');
+    const digits = cleaned.slice(3).replace(/[^0-9]/g, '');
+    const main = digits.slice(0, 9);
+    const check = digits.slice(9, 10);
+    let result = 'GHA';
+    if (main.length > 0) result += '-' + main;
+    if (check.length > 0) result += '-' + check;
+    return result;
+  };
+
+  const handleGhanaCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatGhanaCard(e.target.value);
+    setRiderForm({ ...riderForm, ghanaCardNumber: formatted });
+    requestAnimationFrame(() => {
+      if (ghanaCardRef.current) ghanaCardRef.current.setSelectionRange(formatted.length, formatted.length);
+    });
+  };
+
+  useEffect(() => {
+    fetch('/api/riders')
+      .then((res) => res.json())
+      .then((data) => { if (Array.isArray(data.riders)) setRiders(data.riders); })
+      .catch(() => {});
+  }, []);
   const [addProductModalOpen, setAddProductModalOpen] = useState(false);
 
   interface NavItem {
-    id: 'overview' | 'products' | 'orders' | 'showrooms' | 'payouts' | 'warranty';
+    id: 'overview' | 'products' | 'orders' | 'showrooms' | 'payouts' | 'warranty' | 'riders';
     label: string;
     icon: React.ComponentType<{ className?: string }>;
     badge?: number;
@@ -71,7 +123,8 @@ export const VendorDashboard: React.FC<VendorDashboardProps> = ({
     { id: 'orders', label: 'Orders & Logistics', icon: Package, badge: orders.filter(o => o.status === 'processing' || o.status === 'dispatched').length },
     { id: 'showrooms', label: 'Showroom Stock (35)', icon: Store },
     { id: 'payouts', label: 'Payouts & MoMo', icon: Wallet },
-    { id: 'warranty', label: 'Warranty Claims', icon: ShieldAlert, badge: warrantyClaims.length }
+    { id: 'warranty', label: 'Warranty Claims', icon: ShieldAlert, badge: warrantyClaims.length },
+    { id: 'riders', label: 'Rider Registration', icon: Truck }
   ];
 
   return (
@@ -222,7 +275,111 @@ export const VendorDashboard: React.FC<VendorDashboardProps> = ({
             />
           )}
 
-          {activeTab === 'warranty' && (
+           {activeTab === 'riders' && (
+             <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-4">
+               <div className="pb-4 border-b border-slate-100">
+                 <h3 className="text-base font-extrabold text-slate-900">Rider Registration</h3>
+                 <p className="text-xs text-slate-500">Register delivery riders and capture their details.</p>
+               </div>
+                <div className="space-y-4 max-w-3xl">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                   <div>
+                     <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+                      <input className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" placeholder="e.g. Kwame Mensah" value={riderForm.name} onChange={(e) => setRiderForm({ ...riderForm, name: e.target.value })} required />
+                   </div>
+                   <div>
+                     <label className="block text-xs font-bold text-slate-700 mb-1">Phone</label>
+                      <input className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" placeholder="024 000 0000" value={riderForm.phone} onChange={(e) => setRiderForm({ ...riderForm, phone: e.target.value })} required />
+                   </div>
+                   <div>
+                     <label className="block text-xs font-bold text-slate-700 mb-1">Vehicle Type</label>
+                     <select className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" value={riderForm.vehicleType} onChange={(e) => setRiderForm({ ...riderForm, vehicleType: e.target.value })}>
+                       <option value="motorcycle">Motorcycle</option>
+                       <option value="bicycle">Bicycle</option>
+                       <option value="car">Car</option>
+                       <option value="van">Van</option>
+                     </select>
+                   </div>
+                   <div>
+                     <label className="block text-xs font-bold text-slate-700 mb-1">License Number</label>
+                      <input ref={licenseRef} className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" placeholder="DL-XXXXXXX" value={riderForm.licenseNumber} onChange={handleLicenseChange} required />
+                   </div>
+                   <div>
+                     <label className="block text-xs font-bold text-slate-700 mb-1">Ghana Card Number</label>
+                      <input ref={ghanaCardRef} className="w-full border border-slate-200 rounded-xl p-2.5 text-xs" placeholder="GHA-XXXXXXXXX-X" value={riderForm.ghanaCardNumber} onChange={handleGhanaCardChange} required />
+                   </div>
+                 </div>
+                  <button type="button" onClick={async () => { const res = await fetch('/api/riders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(riderForm) }); const data = await res.json(); if (data.rider?.riderCode) { setRiderCodeModal(data.rider.riderCode); setRiderCopied(false); setShowRiderCodeModal(true); } const list = await fetch('/api/riders'); const listData = await list.json(); if (Array.isArray(listData.riders)) setRiders(listData.riders); }} className="bg-[#073c2c] hover:bg-[#05291e] text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer">Register Rider</button>
+                </div>
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-3 mt-6">
+                  <h4 className="text-sm font-extrabold text-slate-900">Registered Riders</h4>
+                  {riders.length === 0 ? (
+                    <p className="text-xs text-slate-500">No riders registered yet.</p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs text-left">
+                        <thead>
+                          <tr className="border-b border-slate-200 text-slate-400 uppercase text-[10px] font-bold">
+                            <th className="pb-2">Name</th>
+                            <th className="pb-2">Phone</th>
+                            <th className="pb-2">Vehicle</th>
+                            <th className="pb-2">License</th>
+                            <th className="pb-2">Ghana Card</th>
+                            <th className="pb-2">Code</th>
+                            <th className="pb-2">Generate</th>
+                            <th className="pb-2">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {riders.map((r, idx) => (
+                            <tr key={idx}>
+                              <td className="py-2 font-bold">{r.name}</td>
+                              <td className="py-2">{r.phone}</td>
+                              <td className="py-2">{r.vehicleType}</td>
+                              <td className="py-2">{r.licenseNumber}</td>
+                              <td className="py-2">{r.ghanaCardNumber}</td>
+                              <td className="py-2 font-mono">{r.riderCode}</td>
+                              <td className="py-2">
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    const res = await fetch(`/api/riders/generate/${idx}`, { method: 'POST' });
+                                    const data = await res.json();
+                                    if (data.code) { setRiderCodeModal(data.code); setShowRiderCodeModal(true); }
+                                    const list = await fetch('/api/riders');
+                                    const listData = await list.json();
+                                    if (Array.isArray(listData.riders)) setRiders(listData.riders);
+                                  }}
+                                  className="text-xs font-bold text-[#073c2c] hover:underline cursor-pointer"
+                                >
+                                  Generate
+                                </button>
+                              </td>
+                              <td className="py-2">
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    await fetch(`/api/riders/${idx}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ disabled: !r.disabled }) });
+                                    const res = await fetch('/api/riders');
+                                    const data = await res.json();
+                                    if (Array.isArray(data.riders)) setRiders(data.riders);
+                                  }}
+                                  className={`text-xs font-bold px-2 py-1 rounded-lg cursor-pointer ${r.disabled ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`}
+                                >
+                                  {r.disabled ? 'Disabled' : 'Enabled'}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+           {activeTab === 'warranty' && (
             <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-4">
               <div className="pb-4 border-b border-slate-100">
                 <h3 className="text-base font-extrabold text-slate-900">
@@ -268,7 +425,22 @@ export const VendorDashboard: React.FC<VendorDashboardProps> = ({
         </main>
       </div>
 
-      {/* Add Product Modal */}
+       {/* Rider Code Modal */}
+       {showRiderCodeModal && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs">
+           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+             <h3 className="text-base font-extrabold text-slate-900 mb-2">Rider Unique Code</h3>
+             <p className="text-xs text-slate-500 mb-4">Copy and send this code to the rider.</p>
+             <div className="flex items-center gap-2 bg-slate-100 rounded-xl p-3">
+               <span className="font-mono text-sm font-bold text-slate-900 flex-1">{riderCodeModal}</span>
+               <button type="button" onClick={() => { navigator.clipboard.writeText(riderCodeModal); setRiderCopied(true); }} className="bg-[#073c2c] hover:bg-[#05291e] text-white px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">{riderCopied ? 'Copied' : 'Copy'}</button>
+             </div>
+             <button type="button" onClick={() => { setShowRiderCodeModal(false); setRiderCodeModal(''); setRiderCopied(false); }} className="mt-4 w-full bg-slate-200 hover:bg-slate-300 text-slate-700 py-2 rounded-xl text-xs font-bold cursor-pointer">Close</button>
+           </div>
+         </div>
+       )}
+
+       {/* Add Product Modal */}
       <AddProductModal
         isOpen={addProductModalOpen}
         onClose={() => setAddProductModalOpen(false)}

@@ -61,9 +61,10 @@ interface RegisteredDevice {
 interface UserProfilePageProps {
   user?: any;
   onBackToStore: () => void;
+  onLogout?: () => void;
+  onOpenAdminPortal?: () => void;
   onNavigateOrders: () => void;
   onNavigateWishlist: () => void;
-  onOpenAdminPortal?: () => void;
   ordersCount?: number;
   wishlistCount?: number;
 }
@@ -71,9 +72,10 @@ interface UserProfilePageProps {
 export const UserProfilePage: React.FC<UserProfilePageProps> = ({
   user,
   onBackToStore,
+  onLogout,
+  onOpenAdminPortal,
   onNavigateOrders,
   onNavigateWishlist,
-  onOpenAdminPortal,
   ordersCount = 2,
   wishlistCount = 2
 }) => {
@@ -225,6 +227,26 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
   }, [user]);
 
   useEffect(() => {
+    if (user?.businessName) {
+      setProfile((prev) => ({
+        ...prev,
+        firstName: user.contactName || prev.firstName,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone,
+        preferredDispatchHub: user.businessAddress || prev.preferredDispatchHub,
+      }));
+    } else if (user?.licenseNumber) {
+      setProfile((prev) => ({
+        ...prev,
+        firstName: user.name || prev.firstName,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone,
+      }));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.businessName) return;
     fetch('/api/profile')
       .then((res) => res.json())
       .then((data) => {
@@ -235,6 +257,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
       .catch(() => {});
   }, []);
 
+  // Vendor info card (shown for vendor accounts)
   const notifySave = (msg: string) => {
     setSaveSuccessMsg(msg);
     setTimeout(() => setSaveSuccessMsg(null), 3000);
@@ -323,9 +346,9 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{saveSuccessMsg}</span>
         </div>
-      )}
-
-      {/* Top Banner & Header */}
+       )}
+ 
+       {/* Top Banner & Header */}
       <div className="bg-gradient-to-r from-[#03261a] via-[#073c2c] to-[#044e39] text-white pt-8 pb-16 px-4 sm:px-6 lg:px-8 border-b border-emerald-900/50 shadow-md">
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb Navigation */}
@@ -605,65 +628,146 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-                      WhatsApp Dispatch Number
-                    </label>
-                    <input
-                      type="tel"
-                      value={profile.whatsapp}
-                      onChange={(e) => setProfile({ ...profile, whatsapp: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#073c2c]/20 focus:border-[#073c2c] transition-all font-semibold"
-                    />
-                  </div>
+                   {user?.businessName && (
+                     <>
+                       <div>
+                         <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                           Business Name
+                         </label>
+                         <input
+                           type="text"
+                           value={user.businessName}
+                           readOnly
+                           className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold"
+                         />
+                       </div>
+                       <div>
+                         <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                           Vendor Owner
+                         </label>
+                         <input
+                           type="text"
+                           value={user.contactName}
+                           readOnly
+                           className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold"
+                         />
+                       </div>
+                       <div>
+                         <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                           Ghana Card Number
+                         </label>
+                         <input
+                           type="text"
+                           value={user.ghanaCardNumber}
+                           readOnly
+                           className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold"
+                         />
+                       </div>
+                     </>
+                   )}
+                   {user?.licenseNumber && (
+                     <>
+                       <div>
+                         <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                           License Number
+                         </label>
+                         <input
+                           type="text"
+                           value={user.licenseNumber}
+                           readOnly
+                           className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold"
+                         />
+                       </div>
+                       <div>
+                         <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                           Vehicle Type
+                         </label>
+                         <input
+                           type="text"
+                           value={user.vehicleType}
+                           readOnly
+                           className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold"
+                         />
+                       </div>
+                       <div>
+                         <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                           Ghana Card Number
+                         </label>
+                         <input
+                           type="text"
+                           value={user.ghanaCardNumber}
+                           readOnly
+                           className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-semibold"
+                         />
+                       </div>
+                     </>
+                   )}
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-                      Preferred Showroom & Pickup Hub
-                    </label>
-                    <select
-                      value={profile.preferredDispatchHub}
-                      onChange={(e) => setProfile({ ...profile, preferredDispatchHub: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#073c2c]/20 focus:border-[#073c2c] transition-all font-semibold cursor-pointer"
-                    >
-                      <option>Kwame Nkrumah Circle Flagship Hub</option>
-                      <option>Osu Oxford Street Showroom</option>
-                      <option>Accra Mall Flagship</option>
-                      <option>Madina Zongo Junction Branch</option>
-                      <option>Tema Community 1 Center</option>
-                      <option>Kumasi Adum Central Hub</option>
-                      <option>Takoradi Market Circle Branch</option>
-                      <option>Sunyani Main Station Branch</option>
-                      <option>Tamale Central Hub</option>
-                    </select>
-                  </div>
+                   {!user?.businessName && !user?.licenseNumber && (
+                     <div>
+                       <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                         WhatsApp Dispatch Number
+                       </label>
+                       <input
+                         type="tel"
+                         value={profile.whatsapp}
+                         onChange={(e) => setProfile({ ...profile, whatsapp: e.target.value })}
+                         className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#073c2c]/20 focus:border-[#073c2c] transition-all font-semibold"
+                       />
+                     </div>
+                   )}
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-                      Gender
-                    </label>
-                    <select
-                      value={profile.gender}
-                      onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#073c2c]/20 focus:border-[#073c2c] transition-all font-semibold cursor-pointer"
-                    >
-                      <option>Male</option>
-                      <option>Female</option>
-                      <option>Prefer not to say</option>
-                    </select>
-                  </div>
+                   {!user?.businessName && !user?.licenseNumber && (
+                     <>
+                       <div>
+                         <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                           Preferred Showroom & Pickup Hub
+                         </label>
+                         <select
+                           value={profile.preferredDispatchHub}
+                           onChange={(e) => setProfile({ ...profile, preferredDispatchHub: e.target.value })}
+                           className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#073c2c]/20 focus:border-[#073c2c] transition-all font-semibold cursor-pointer"
+                         >
+                           <option>Kwame Nkrumah Circle Flagship Hub</option>
+                           <option>Osu Oxford Street Showroom</option>
+                           <option>Accra Mall Flagship</option>
+                           <option>Madina Zongo Junction Branch</option>
+                           <option>Tema Community 1 Center</option>
+                           <option>Kumasi Adum Central Hub</option>
+                           <option>Takoradi Market Circle Branch</option>
+                           <option>Sunyani Main Station Branch</option>
+                           <option>Tamale Central Hub</option>
+                         </select>
+                       </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
-                      Date of Birth
-                    </label>
-                    <input
-                      type="date"
-                      value={profile.birthDate}
-                      onChange={(e) => setProfile({ ...profile, birthDate: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#073c2c]/20 focus:border-[#073c2c] transition-all font-semibold"
-                    />
-                  </div>
+                       <div>
+                         <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                           Gender
+                         </label>
+                         <select
+                           value={profile.gender}
+                           onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
+                           className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#073c2c]/20 focus:border-[#073c2c] transition-all font-semibold cursor-pointer"
+                         >
+                           <option>Male</option>
+                           <option>Female</option>
+                           <option>Prefer not to say</option>
+                         </select>
+                       </div>
+
+                       <div>
+                         <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                           Date of Birth
+                         </label>
+                         <input
+                           type="date"
+                           value={profile.birthDate}
+                           onChange={(e) => setProfile({ ...profile, birthDate: e.target.value })}
+                           className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#073c2c]/20 focus:border-[#073c2c] transition-all font-semibold"
+                         />
+                       </div>
+                     </>
+                   )}
                 </div>
 
                 <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
@@ -1184,6 +1288,16 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
               </form>
             </div>
           </div>
+        </div>
+      )}
+      {onLogout && (
+        <div className="mt-6">
+          <button
+            onClick={onLogout}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer"
+          >
+            Log Out
+          </button>
         </div>
       )}
     </div>

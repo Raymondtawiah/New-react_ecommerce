@@ -5,14 +5,17 @@ interface LoginProps {
   onClose?: () => void;
   onLogin?: (email: string, password: string) => void;
   onSignUp?: (name: string, email: string, password: string) => void;
-  onOpenAdminLogin?: () => void;
+  onAuthSuccess?: (data: any) => void;
+  onVendorLogin?: (vendor: any) => void;
+  onRiderLogin?: (rider: any) => void;
 }
 
-export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp, onOpenAdminLogin }) => {
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
+export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp, onAuthSuccess, onVendorLogin, onRiderLogin }) => {
+  const [mode, setMode] = useState<'login' | 'signup' | 'vendor'>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [vendorCode, setVendorCode] = useState('');
   const [password, setPassword] = useState('');
 
   const [error, setError] = useState('');
@@ -23,6 +26,19 @@ export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp, onOpen
     setError('');
     setLoading(true);
     try {
+      if (mode === 'vendor') {
+        const res = await fetch('/api/vendors/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: vendorCode }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Vendor login failed');
+        if (data.type === 'rider') onRiderLogin?.(data.vendor);
+        else onVendorLogin?.(data.vendor);
+        onClose?.();
+        return;
+      }
       if (mode === 'login') {
         const res = await fetch('/api/auth/login', {
           method: 'POST',
@@ -31,6 +47,7 @@ export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp, onOpen
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Login failed');
+        onAuthSuccess?.(data);
         onLogin?.(email, password);
         onClose?.();
       } else {
@@ -98,11 +115,38 @@ export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp, onOpen
           >
             Sign Up
           </button>
+          <button
+            type="button"
+            onClick={() => setMode('vendor')}
+            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all cursor-pointer ${
+              mode === 'vendor'
+                ? 'bg-white text-[#073c2c] shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            Vendor Login
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === 'signup' && (
+          {mode === 'vendor' ? (
             <div>
+              <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1.5">
+                Vendor Unique Code
+              </label>
+              <input
+                type="text"
+                value={vendorCode}
+                onChange={(e) => setVendorCode(e.target.value)}
+                required
+                placeholder="VND-XXXXXX-XXXX"
+                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#073c2c]/30 focus:border-[#073c2c]"
+              />
+            </div>
+          ) : (
+            <>
+              {mode === 'signup' && (
+                <div>
               <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1.5">
                 Full Name
               </label>
@@ -161,6 +205,10 @@ export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp, onOpen
             </div>
           </div>
 
+           {error && <p className="text-sm text-red-600">{error}</p>}
+
+          </>
+          )}
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           <button
@@ -168,7 +216,7 @@ export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp, onOpen
             disabled={loading}
             className="w-full bg-[#b91c1c] hover:bg-[#991b1b] text-white py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm cursor-pointer disabled:opacity-50"
           >
-            {mode === 'login' ? 'Sign In' : 'Create Account'}
+            {(mode as 'login' | 'signup' | 'vendor') === 'vendor' ? 'Vendor Login' : mode === 'login' ? 'Sign In' : 'Create Account'}
           </button>
         </form>
 
@@ -181,28 +229,10 @@ export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp, onOpen
           >
             {mode === 'login' ? 'Sign Up' : 'Login'}
           </button>
-        </p>
-
-        {onOpenAdminLogin && (
-          <div className="mt-5 pt-4 border-t border-slate-100 text-center">
-            <button
-              type="button"
-              onClick={() => {
-                onClose?.();
-                onOpenAdminLogin();
-              }}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer"
-            >
-              <span>Store Administrator Portal</span>
-              <span className="text-[10px] bg-emerald-200 text-emerald-900 font-extrabold px-1.5 py-0.2 rounded">
-                Default: admin
-              </span>
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+         </p>
+       </div>
+     </div>
+   );
+ };
 
 export default Login;
