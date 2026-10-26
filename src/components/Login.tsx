@@ -5,9 +5,10 @@ interface LoginProps {
   onClose?: () => void;
   onLogin?: (email: string, password: string) => void;
   onSignUp?: (name: string, email: string, password: string) => void;
+  onOpenAdminLogin?: () => void;
 }
 
-export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp }) => {
+export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp, onOpenAdminLogin }) => {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
@@ -181,6 +182,24 @@ export const Login: React.FC<LoginProps> = ({ onClose, onLogin, onSignUp }) => {
             {mode === 'login' ? 'Sign Up' : 'Login'}
           </button>
         </p>
+
+        {onOpenAdminLogin && (
+          <div className="mt-5 pt-4 border-t border-slate-100 text-center">
+            <button
+              type="button"
+              onClick={() => {
+                onClose?.();
+                onOpenAdminLogin();
+              }}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer"
+            >
+              <span>Store Administrator Portal</span>
+              <span className="text-[10px] bg-emerald-200 text-emerald-900 font-extrabold px-1.5 py-0.2 rounded">
+                Default: admin
+              </span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

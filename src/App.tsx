@@ -21,6 +21,8 @@ import { CategoriesMenu } from './components/CategoriesMenu';
 import { ShowroomsModal, AccountModal } from './components/InfoModals';
 import { Login } from './components/Login';
 import { VendorDashboard } from './components/vendor/VendorDashboard';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { AdminLoginModal } from './components/admin/AdminLoginModal';
 import { ScrollZoomSection } from './components/ScrollZoomSection';
 import { ProductDetailsPage } from './components/ProductDetailsPage';
 import { CustomerOrdersPage, CustomerOrder } from './components/CustomerOrdersPage';
@@ -33,8 +35,10 @@ import {
   INITIAL_VENDOR_PAYOUTS,
   INITIAL_WARRANTY_CLAIMS
 } from './data/vendorData';
+import { INITIAL_ADMIN_PROFILE } from './data/adminData';
 import { Product, FilterState, CartItem, TechCategory, ProductImageAngles } from './types';
 import { VendorOrder, ShowroomStockAllocation, VendorPayout, WarrantyClaim } from './types/vendor';
+import { AdminUser } from './types/admin';
 const INITIAL_CUSTOMER_ORDERS: CustomerOrder[] = [
   {
     id: 'ord-cust-1',
@@ -83,8 +87,13 @@ const INITIAL_CUSTOMER_ORDERS: CustomerOrder[] = [
 ];
 
 export default function App() {
-  // Navigation View: 'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor' | 'profile'
-  const [viewMode, setViewMode] = useState<'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor' | 'profile'>('storefront');
+  // Navigation View: 'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor' | 'profile' | 'admin'
+  const [viewMode, setViewMode] = useState<'storefront' | 'product-details' | 'orders' | 'wishlist' | 'vendor' | 'profile' | 'admin'>('storefront');
+
+  // Administrator Session & Authentication
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminUser, setAdminUser] = useState<AdminUser>(INITIAL_ADMIN_PROFILE);
+  const [adminLoginModalOpen, setAdminLoginModalOpen] = useState(false);
 
   // Currently inspected product for full details page
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(INITIAL_PRODUCTS[0]);
@@ -403,6 +412,29 @@ export default function App() {
     setVendorPayouts((prev) => [newPayout, ...prev]);
   };
 
+  // Administrator Portal Access Handlers
+  const handleOpenAdminPortal = () => {
+    if (isAdminLoggedIn) {
+      setViewMode('admin');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setAdminLoginModalOpen(true);
+    }
+  };
+
+  const handleAdminLoginSuccess = (admin: AdminUser) => {
+    setIsAdminLoggedIn(true);
+    setAdminUser(admin);
+    setViewMode('admin');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminLoggedIn(false);
+    setViewMode('storefront');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-[#073c2c] selection:text-white flex flex-col">
       {/* 1. Slim Top Notification & Contact Bar */}
@@ -450,10 +482,9 @@ export default function App() {
         }}
         onOpenAccount={() => { if (user) setViewMode('profile'); else setLoginOpen(true); }}
         user={user}
-        onOpenVendorPortal={() => {
-          setViewMode(viewMode === 'vendor' ? 'storefront' : 'vendor');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onOpenVendorPortal={handleOpenAdminPortal}
+        onOpenAdminPortal={handleOpenAdminPortal}
+        isAdmin={isAdminLoggedIn}
         cartCount={cartCount}
         cartSubtotal={cartSubtotal}
         wishlistCount={wishlistIds.length}
@@ -488,7 +519,33 @@ export default function App() {
       />
 
       {/* CONDITIONAL MAIN CONTENT ROUTING */}
-      {viewMode === 'vendor' ? (
+      {viewMode === 'admin' ? (
+        /* APEXTECH CENTRAL ADMIN CONSOLE */
+        <div className="flex-1 animate-page-zoom-in">
+          <AdminDashboard
+            products={products}
+            vendorOrders={vendorOrders}
+            customerOrders={customerOrders}
+            showrooms={showroomStocks}
+            payouts={vendorPayouts}
+            warrantyClaims={warrantyClaims}
+            adminUser={adminUser}
+            onUpdateAdminUser={setAdminUser}
+            onBackToStorefront={() => {
+              setViewMode('storefront');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onLogout={handleAdminLogout}
+            onAddProduct={handleAddProduct}
+            onUpdateProductPrice={handleUpdateProductPrice}
+            onDeleteProduct={handleDeleteProduct}
+            onUpdateOrderStatus={handleUpdateOrderStatus}
+            onTransferStock={handleRebalanceStock}
+            onRequestPayout={handleRequestPayout}
+            onViewProductOnStorefront={(prod) => handleViewProductDetails(prod)}
+          />
+        </div>
+      ) : viewMode === 'vendor' ? (
         /* VENDOR DASHBOARD (Partner Central) */
         <div className="flex-1 animate-page-zoom-in">
           <VendorDashboard
@@ -566,6 +623,7 @@ export default function App() {
               setViewMode('wishlist');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
+            onOpenAdminPortal={handleOpenAdminPortal}
             ordersCount={customerOrders.length}
             wishlistCount={wishlistIds.length}
           />
@@ -654,7 +712,7 @@ export default function App() {
       )}
 
       {/* 5. Deep Forest Green Footer (Visible on all customer views) */}
-      {viewMode !== 'vendor' && (
+      {viewMode !== 'vendor' && viewMode !== 'admin' && (
         <Footer
           onOpenShowrooms={() => setShowroomsOpen(true)}
           onOpenHelp={() => setShowroomsOpen(true)}
@@ -663,6 +721,7 @@ export default function App() {
             setViewMode('orders');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
+          onOpenAdminPortal={handleOpenAdminPortal}
         />
       )}
 
@@ -700,14 +759,25 @@ export default function App() {
         onClose={() => setShowroomsOpen(false)}
       />
 
-      {/* Login / Sign Up Modal */}
+      {/* Customer Login / Sign Up Modal */}
       {loginOpen && (
         <Login
           onClose={() => setLoginOpen(false)}
           onLogin={(email: string) => setUser({ name: email.split('@')[0], email })}
           onSignUp={(name: string, email: string) => setUser({ name, email })}
+          onOpenAdminLogin={() => {
+            setLoginOpen(false);
+            setAdminLoginModalOpen(true);
+          }}
         />
       )}
+
+      {/* Central Administrator Authentication Modal */}
+      <AdminLoginModal
+        isOpen={adminLoginModalOpen}
+        onClose={() => setAdminLoginModalOpen(false)}
+        onSuccess={handleAdminLoginSuccess}
+      />
     </div>
   );
 }

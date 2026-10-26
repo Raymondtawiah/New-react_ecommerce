@@ -24,13 +24,15 @@ interface FooterProps {
   onOpenHelp?: () => void;
   onOpenWarranty?: () => void;
   onOpenDeliveryTrack?: () => void;
+  onOpenAdminPortal?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onOpenShowrooms,
   onOpenHelp,
   onOpenWarranty,
-  onOpenDeliveryTrack
+  onOpenDeliveryTrack,
+  onOpenAdminPortal
 }) => {
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [copiedPhone, setCopiedPhone] = useState<string | null>(null);
@@ -388,6 +390,17 @@ export const Footer: React.FC<FooterProps> = ({
                   Terms of Sale & Buyer Protection
                 </a>
               </li>
+              {onOpenAdminPortal && (
+                <li>
+                  <button
+                    onClick={onOpenAdminPortal}
+                    className="hover:text-emerald-300 text-emerald-400 font-bold transition-colors cursor-pointer text-left flex items-center gap-1.5 pt-1 hover:translate-x-0.5 transform"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>ApexTech Admin Portal</span>
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 
