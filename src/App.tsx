@@ -183,7 +183,7 @@ export default function App() {
     return {
       title: 'All Technology & Accessories',
       subtitle: 'Complete official technology catalog across smartphones, laptops, smart TVs, appliances & accessories in Ghana',
-      bannerBadge: 'OFFICIAL FRANKO TECH REPOSITORY'
+      bannerBadge: 'OFFICIAL APEXTECH TECH REPOSITORY'
     };
   }, [activeTabCategory]);
 
@@ -572,7 +572,7 @@ export default function App() {
           />
         </div>
       ) : (
-        /* DEFAULT STOREFRONT (Franko Trading Welcome Store) */
+        /* DEFAULT STOREFRONT (ApexTech Ghana Storefront) */
         <div className="flex-1 flex flex-col animate-page-zoom-in">
           {/* 3. Deep Green Sub-Navbar with 5 Technology Departments */}
           <SubNavbar

@@ -292,11 +292,11 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({
         </div>
       </div>
 
-      {/* 7. Franko Guarantee Banner Box */}
+      {/* 7. ApexTech Guarantee Banner Box */}
       <div className="bg-[#07392a] text-white rounded-2xl p-4 shadow-sm border border-emerald-900/40 relative overflow-hidden">
         <div className="flex items-center gap-2 mb-2">
           <ShieldCheck className="w-5 h-5 text-emerald-400" />
-          <h4 className="text-xs font-bold tracking-wide text-white">Franko Tech Guarantee</h4>
+          <h4 className="text-xs font-bold tracking-wide text-white">ApexTech Tech Guarantee</h4>
         </div>
         <p className="text-[11px] text-emerald-100/90 leading-relaxed font-normal">
           Every phone, laptop, smart TV, home appliance, and accessory purchased includes an official 12-month manufacturer warranty and repair coverage at our 35 nationwide service hubs.

@@ -60,7 +60,7 @@ export const SubNavbar: React.FC<SubNavbarProps> = ({
             className="flex items-center gap-1 hover:text-[#073c2c] transition-colors cursor-pointer"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Franko Warranty</span>
+            <span>ApexTech Warranty</span>
           </button>
 
           <div className="flex items-center gap-1 text-slate-600">

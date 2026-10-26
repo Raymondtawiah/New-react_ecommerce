@@ -166,7 +166,7 @@ export const TechGraphic: React.FC<TechGraphicProps> = ({
               <span className="text-[6px] bg-emerald-500 text-slate-950 font-bold px-1.5 py-0.5 rounded">ORIGINAL</span>
             </div>
             <div className="my-auto text-center">
-              <div className="text-xs font-black">FRANKO CERTIFIED</div>
+              <div className="text-xs font-black">APEX CERTIFIED</div>
               <div className="text-[7px] text-slate-300 mt-0.5">12M Full Warranty Included</div>
             </div>
             <div className="text-[6px] text-center text-slate-400">Factory Sealed Box & Accessories</div>

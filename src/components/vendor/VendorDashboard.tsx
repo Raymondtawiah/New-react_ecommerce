@@ -226,10 +226,10 @@ export const VendorDashboard: React.FC<VendorDashboardProps> = ({
             <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs space-y-4">
               <div className="pb-4 border-b border-slate-100">
                 <h3 className="text-base font-extrabold text-slate-900">
-                  Franko 12-Month Official Warranty Claims
+                  ApexTech 12-Month Official Warranty Claims
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Track devices undergoing inspection or authorized repairs at nationwide Franko service hubs
+                  Track devices undergoing inspection or authorized repairs at nationwide ApexTech service hubs
                 </p>
               </div>
 

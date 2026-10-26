@@ -112,7 +112,7 @@ export const CustomerOrdersPage: React.FC<CustomerOrdersPageProps> = ({
                 Customer Orders & Live Delivery Tracking
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
-                Track your authentic technology parcels dispatched from Franko Trading showrooms across Ghana.
+                Track your authentic technology parcels dispatched from ApexTech Ghana showrooms across Ghana.
               </p>
             </div>
 
@@ -311,7 +311,7 @@ export const CustomerOrdersPage: React.FC<CustomerOrdersPageProps> = ({
                             <RotateCcw className="w-3 h-3" />
                             <span>Reorder Items</span>
                           </button>
-                          <span className="text-slate-400 font-medium">12-Month Franko Warranty Active</span>
+                          <span className="text-slate-400 font-medium">12-Month ApexTech Warranty Active</span>
                         </div>
                       </div>
                     </div>
@@ -370,7 +370,7 @@ export const CustomerOrdersPage: React.FC<CustomerOrdersPageProps> = ({
                     <div
                       className={`absolute -left-6 w-4 h-4 rounded-full flex items-center justify-center ring-4 ring-white ${
                         selectedOrderModal.status !== 'processing'
-                          ? 'bg-emerald-600 text-white'
+                           ? 'bg-emerald-600 text-white'
                           : 'bg-blue-600 text-white animate-pulse'
                       }`}
                     >
@@ -381,7 +381,7 @@ export const CustomerOrdersPage: React.FC<CustomerOrdersPageProps> = ({
                         Inspected & Boxed at {selectedOrderModal.dispatchHub}
                       </strong>
                       <span className="text-[11px] text-slate-500">
-                        12-Month Franko Warranty Seal stamped and serial registered
+                        12-Month ApexTech Warranty Seal stamped and serial registered
                       </span>
                     </div>
                   </div>
@@ -436,7 +436,7 @@ export const CustomerOrdersPage: React.FC<CustomerOrdersPageProps> = ({
               <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
                 <a
                   href={`https://wa.me/233503607980?text=${encodeURIComponent(
-                    `Hello Franko Trading, I am following up on my order ${selectedOrderModal.orderNumber}`
+                    `Hello ApexTech Ghana, I am following up on my order ${selectedOrderModal.orderNumber}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"

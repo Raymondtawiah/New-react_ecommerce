@@ -307,7 +307,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                     )}
                   </div>
                   <p className="text-[11px] text-slate-500 mt-1 font-medium">
-                    Inclusive of all Ghana statutory taxes & standard 12-month Franko warranty seal.
+                    Inclusive of all Ghana statutory taxes & standard 12-month ApexTech warranty seal.
                   </p>
                 </div>
 
@@ -432,7 +432,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                   {/* WhatsApp Quick Order button */}
                   <a
                     href={`https://wa.me/233503607980?text=${encodeURIComponent(
-                      `Hello Franko Trading! I want to order ${product.fullName || product.name} (${product.price} GHS). Please confirm stock availability.`
+                      `Hello ApexTech Ghana! I want to order ${product.fullName || product.name} (${product.price} GHS). Please confirm stock availability.`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -581,7 +581,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                     </h4>
                     <div className="space-y-3 text-xs text-slate-600">
                       <p>
-                        <strong className="text-slate-900">Greater Accra:</strong> Same-day dispatch for orders placed before 3:00 PM. Delivered by verified Franko rider.
+                        <strong className="text-slate-900">Greater Accra:</strong> Same-day dispatch for orders placed before 3:00 PM. Delivered by verified ApexTech rider.
                       </p>
                       <p>
                         <strong className="text-slate-900">Ashanti Region (Kumasi):</strong> Next-day delivery to your doorstep or pickup at Adum / Kejetia hubs.
@@ -601,12 +601,12 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                       <ShieldCheck className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-extrabold text-slate-900">Official Franko 12-Month Coverage</h4>
+                      <h4 className="text-sm font-extrabold text-slate-900">Official ApexTech 12-Month Coverage</h4>
                       <p className="text-xs text-slate-500">Full manufacturer replacement and repair warranty across all 35 retail hubs</p>
                     </div>
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Every piece of tech purchased from Franko Trading is 100% authentic, brand-new, and sealed with the official distributor warranty sticker. If your device experiences manufacturer defects within 12 months, simply bring your receipt to any Franko service desk for prompt diagnostic support, repair, or unit replacement.
+                    Every piece of tech purchased from ApexTech Ghana is 100% authentic, brand-new, and sealed with the official distributor warranty sticker. If your device experiences manufacturer defects within 12 months, simply bring your receipt to any ApexTech service desk for prompt diagnostic support, repair, or unit replacement.
                   </p>
                 </div>
               )}

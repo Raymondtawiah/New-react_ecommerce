@@ -161,7 +161,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     graphicType: 'tecno-spark20',
     phoneType: 'tecno-spark20',
     description: 'Empowered with an ultra-sensing 108MP camera, Helio G99 gaming processor, 33W super-charge technology, and massive 256GB storage capacity.',
-    inStockBranches: ['All 35 Franko Showrooms Nationwide']
+    inStockBranches: ['All 35 ApexTech Showrooms Nationwide']
   },
   {
     id: 'infinix-note-40-256gb',
@@ -208,7 +208,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     specs: ['108MP Triple', 'AMOLED 120Hz'],
     storage: '128GB',
     ram: '8GB',
-    stockStatus: 'In Stock • Free Franko Pouch',
+    stockStatus: 'In Stock • Free ApexTech Pouch',
     hasDiscount: true,
     colorName: 'Mint Blue Ice',
     graphicType: 'redmi-note13',
@@ -389,7 +389,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       { text: 'POPULAR', type: 'popular', bgClass: 'bg-[#064e3b] text-white font-bold' }
     ],
     specs: ['1.5 HP Inverter', 'R32 Gas', 'Copper Tubing'],
-    stockStatus: 'In Stock • Certified Franko Technicians',
+    stockStatus: 'In Stock • Certified ApexTech Technicians',
     isPopular: true,
     hasDiscount: false,
     colorName: 'Arctic White',
@@ -422,7 +422,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     colorName: 'Textured Black',
     graphicType: 'accessory-powerbank',
     description: 'Never get stranded in power fluctuations: charges an iPhone 15 up to 7 times or Samsung Galaxy up to 6 times with high-speed 22.5W power delivery.',
-    inStockBranches: ['All 35 Franko Showrooms Nationwide']
+    inStockBranches: ['All 35 ApexTech Showrooms Nationwide']
   },
   {
     id: 'apple-watch-series-9',
@@ -482,7 +482,7 @@ export const CATEGORY_METADATA: Record<TechCategory, {
 }> = {
   mobile: {
     title: 'Mobile Phones & Smartphones',
-    subtitle: 'Official Manufacturer Certified Stock • 12-Month Official Franko Warranty',
+    subtitle: 'Official Manufacturer Certified Stock • 12-Month Official ApexTech Warranty',
     brands: [
       { name: 'All Brands', count: 92, key: 'All' },
       { name: 'Samsung', count: 34, key: 'Samsung' },

@@ -27,13 +27,13 @@ export const VendorOverview: React.FC<VendorOverviewProps> = ({
       <div className="bg-gradient-to-r from-[#073c2c] to-[#04281d] rounded-2xl p-6 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm border border-emerald-950">
         <div>
           <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-300">
-            Franko Partner Central • Official Distributor Desk
+            ApexTech Partner Central • Official Distributor Desk
           </span>
           <h2 className="text-xl sm:text-2xl font-black mt-1">
             Welcome back, Samsung & Multi-Brand Hub
           </h2>
           <p className="text-xs text-emerald-100/80 mt-1 max-w-xl">
-            Live inventory synchronization across Ghana's 35 official Franko Trading branches and nationwide online dispatch.
+            Live inventory synchronization across Ghana's 35 official ApexTech branches and nationwide online dispatch.
           </p>
         </div>
 

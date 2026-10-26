@@ -44,11 +44,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
-    if (promoCode.trim().toUpperCase() === 'FRANKO50') {
+    if (promoCode.trim().toUpperCase() === 'APEX50') {
       setDiscount(50);
       setPromoError('');
     } else {
-      setPromoError('Invalid promo code. Try FRANKO50');
+      setPromoError('Invalid promo code. Try APEX50');
     }
   };
 
@@ -168,7 +168,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       type="text"
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value)}
-                      placeholder="Promo Code (try FRANKO50)"
+                      placeholder="Promo Code (try APEX50)"
                       className="flex-1 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 uppercase font-semibold focus:outline-none focus:ring-1 focus:ring-[#073c2c]"
                     />
                     <button
@@ -180,7 +180,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   </form>
                   {discount > 0 && (
                     <div className="text-xs text-emerald-600 font-bold">
-                      ✓ Promo FRANKO50 applied (-GH₵ 50.00)
+                      ✓ Promo APEX50 applied (-GH₵ 50.00)
                     </div>
                   )}
                 </div>
@@ -297,7 +297,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   Payment Confirmed!
                 </h3>
                 <p className="text-xs text-slate-600 mt-2 max-w-xs mx-auto">
-                  Your order has been registered in the Franko Trading central dispatch system. Order tracking ID: <strong className="font-mono text-slate-900">FT-GH-{Math.floor(100000 + Math.random() * 900000)}</strong>
+                  Your order has been registered in the ApexTech Ghana central dispatch system. Order tracking ID: <strong className="font-mono text-slate-900">AT-GH-{Math.floor(100000 + Math.random() * 900000)}</strong>
                 </p>
                 <div className="mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-left text-xs space-y-2">
                   <div className="flex justify-between">
@@ -329,7 +329,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-emerald-600 font-semibold">
-                    <span>Discount (FRANKO50)</span>
+                    <span>Discount (APEX50)</span>
                     <span>-GH₵ {discount.toFixed(2)}</span>
                   </div>
                 )}
@@ -374,7 +374,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                           items,
                           total: finalTotal,
                           paymentMethod: paymentLabels[paymentMethod] || 'MTN MoMo',
-                          recipientName: customerName || 'Franko Valued Customer',
+                          recipientName: customerName || 'ApexTech Valued Customer',
                           deliveryRegion
                         });
                       }

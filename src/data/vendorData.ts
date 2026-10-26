@@ -152,7 +152,7 @@ export const INITIAL_VENDOR_PAYOUTS: VendorPayout[] = [
     payoutRef: 'PAY-GH-78401',
     amount: 35000.0,
     channel: 'MTN MoMo',
-    recipientNumber: '024 456 7890 (Franko Partner Wallet)',
+    recipientNumber: '024 456 7890 (ApexTech Partner Wallet)',
     status: 'completed',
     date: '24 Oct 2026, 03:30 PM'
   },
@@ -184,7 +184,7 @@ export const INITIAL_WARRANTY_CLAIMS: WarrantyClaim[] = [
     imei: '354891048291048',
     customerName: 'Kofi Owusu',
     issueDescription: 'Screen touch response intermittently lagging after update',
-    repairCenter: 'Accra Circle Official Franko Service Hub',
+    repairCenter: 'Accra Circle Official ApexTech Service Hub',
     status: 'diagnosing',
     dateFiled: 'Today, 08:30 AM'
   },
