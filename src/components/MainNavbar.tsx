@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Logo } from './Logo';
-import { Search, LayoutGrid, ChevronDown, User, Heart, ShoppingBag, X, Package, Store } from 'lucide-react';
+import { Search, LayoutGrid, ChevronDown, User, Heart, ShoppingBag, X, Package, Store, ShieldCheck } from 'lucide-react';
 import { Product } from '../types';
 
 interface MainNavbarProps {
@@ -14,6 +14,8 @@ interface MainNavbarProps {
   onOpenAccount: () => void;
   user?: any;
   onOpenVendorPortal: () => void;
+  onOpenAdminPortal?: () => void;
+  isAdmin?: boolean;
   cartCount: number;
   cartSubtotal: number;
   wishlistCount: number;
@@ -34,6 +36,8 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
   onOpenAccount,
   user,
   onOpenVendorPortal,
+  onOpenAdminPortal,
+  isAdmin = false,
   cartCount,
   cartSubtotal,
   wishlistCount,
@@ -44,14 +48,63 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
 }) => {
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
   const [showMobileSuggestions, setShowMobileSuggestions] = useState(false);
+  const [isDesktopSearchOpen, setIsDesktopSearchOpen] = useState(Boolean(searchQuery));
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const desktopInputRef = useRef<HTMLInputElement>(null);
   const mobileSearchRef = useRef<HTMLDivElement>(null);
 
-  // Close suggestions when clicking outside
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-expand desktop search if query exists
+  useEffect(() => {
+    if (searchQuery.trim().length > 0) {
+      setIsDesktopSearchOpen(true);
+    }
+  }, [searchQuery]);
+
+  // Clean up hover timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleSearchMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setIsDesktopSearchOpen(true);
+    setTimeout(() => {
+      desktopInputRef.current?.focus();
+    }, 50);
+  };
+
+  const handleSearchMouseLeave = () => {
+    // Keep open if user has typed a query or input is currently focused
+    if (searchQuery.trim().length > 0 || document.activeElement === desktopInputRef.current) {
+      return;
+    }
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      if (!searchQuery.trim() && document.activeElement !== desktopInputRef.current) {
+        setIsDesktopSearchOpen(false);
+      }
+    }, 350);
+  };
+
+  // Close suggestions and collapse desktop search when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
         setShowSearchSuggestions(false);
+        if (!searchQuery.trim()) {
+          setIsDesktopSearchOpen(false);
+        }
       }
       if (mobileSearchRef.current && !mobileSearchRef.current.contains(e.target as Node)) {
         setShowMobileSuggestions(false);
@@ -59,7 +112,7 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [searchQuery]);
 
   const searchResults = searchQuery.trim()
     ? products.filter(p =>
@@ -105,66 +158,121 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
             </button>
           </div>
 
-          {/* 2. Middle Search Bar (Tablet & Desktop) */}
-          <div ref={searchContainerRef} className="relative flex-1 min-w-0 max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg hidden md:block">
-            <div className="flex items-center rounded-xl border border-slate-300 focus-within:border-[#073c2c] focus-within:ring-2 focus-within:ring-[#073c2c]/15 overflow-hidden bg-white shadow-xs transition-all">
-              <div className="pl-3.5 text-slate-400">
-                <Search className="w-4 h-4" />
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  onSearchChange(e.target.value);
-                  setShowSearchSuggestions(true);
-                }}
-                onFocus={() => setShowSearchSuggestions(true)}
-                placeholder="Search original phones, laptops, TVs..."
-                className="w-full py-2 px-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => onSearchChange('')}
-                  className="pr-2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                  title="Clear search"
-                  aria-label="Clear search"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
+          {/* 2. Desktop Search (Collapsible Icon -> Smooth Expandable Bar on Hover/Click) */}
+          <div
+            ref={searchContainerRef}
+            onMouseEnter={handleSearchMouseEnter}
+            onMouseLeave={handleSearchMouseLeave}
+            className="hidden md:flex items-center relative"
+          >
+            {!isDesktopSearchOpen && !searchQuery ? (
               <button
-                onClick={() => setShowSearchSuggestions(false)}
-                className="bg-[#b91c1c] hover:bg-[#991b1b] text-white px-4 lg:px-5 py-2 text-sm font-semibold transition-colors cursor-pointer shrink-0"
+                type="button"
+                onMouseEnter={handleSearchMouseEnter}
+                onClick={handleSearchMouseEnter}
+                className="flex items-center justify-center p-2.5 text-slate-700 hover:text-[#073c2c] hover:bg-slate-100 rounded-xl transition-all cursor-pointer group shadow-2xs hover:shadow-xs border border-transparent hover:border-slate-200"
+                title="Search products (Hover to expand)"
+                aria-label="Open search bar"
               >
-                Search
+                <Search className="w-5 h-5 transition-transform group-hover:scale-110" />
               </button>
-            </div>
-
-            {/* Live Search Suggestions Dropdown */}
-            {showSearchSuggestions && searchQuery.trim().length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                {searchResults.length > 0 ? (
-                  searchResults.map((product) => (
-                    <button
-                      key={product.id}
-                      onClick={() => {
-                        onSelectProduct(product);
+            ) : (
+              <div className="relative flex items-center animate-in fade-in slide-in-from-right-3 duration-250 w-56 md:w-64 lg:w-72 max-w-[280px]">
+                <div className="w-full flex items-center rounded-xl border border-slate-300 focus-within:border-[#073c2c] focus-within:ring-2 focus-within:ring-[#073c2c]/15 overflow-hidden bg-white shadow-xs transition-all">
+                  <div className="pl-2.5 text-slate-400">
+                    <Search className="w-3.5 h-3.5" />
+                  </div>
+                  <input
+                    ref={desktopInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      onSearchChange(e.target.value);
+                      setShowSearchSuggestions(true);
+                    }}
+                    onFocus={() => setShowSearchSuggestions(true)}
+                    onBlur={() => {
+                      setTimeout(() => {
+                        if (!searchContainerRef.current?.matches(':hover') && !searchQuery.trim()) {
+                          setIsDesktopSearchOpen(false);
+                        }
+                      }, 250);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
                         setShowSearchSuggestions(false);
+                      } else if (e.key === 'Escape') {
+                        if (!searchQuery.trim()) {
+                          setIsDesktopSearchOpen(false);
+                        } else {
+                          setShowSearchSuggestions(false);
+                        }
+                      }
+                    }}
+                    placeholder="Search products..."
+                    className="w-full py-1.5 px-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
+                    autoFocus
+                  />
+                  {searchQuery ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onSearchChange('');
+                        desktopInputRef.current?.focus();
                       }}
-                      className="w-full px-4 py-2 text-left hover:bg-slate-50 flex items-center justify-between transition-colors cursor-pointer border-b border-slate-50 last:border-b-0"
+                      className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer mr-0.5"
+                      title="Clear search"
+                      aria-label="Clear search"
                     >
-                      <div className="pr-3">
-                        <div className="text-xs font-bold text-slate-900 line-clamp-1">{product.fullName}</div>
-                        <div className="text-[11px] text-slate-500">{product.brandCategory} • {product.specs.slice(0, 2).join(', ')}</div>
-                      </div>
-                      <div className="text-xs font-extrabold text-[#b91c1c] shrink-0 ml-2">
-                        GH₵ {product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                      </div>
+                      <X className="w-3.5 h-3.5" />
                     </button>
-                  ))
-                ) : (
-                  <div className="px-4 py-3 text-xs text-slate-500 text-center">
-                    No products found matching "{searchQuery}"
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsDesktopSearchOpen(false)}
+                      className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer mr-0.5"
+                      title="Close search"
+                      aria-label="Close search"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setShowSearchSuggestions(false)}
+                    className="bg-[#b91c1c] hover:bg-[#991b1b] text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer shrink-0"
+                  >
+                    Search
+                  </button>
+                </div>
+
+                {/* Live Search Suggestions Dropdown */}
+                {showSearchSuggestions && searchQuery.trim().length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                    {searchResults.length > 0 ? (
+                      searchResults.map((product) => (
+                        <button
+                          key={product.id}
+                          onClick={() => {
+                            onSelectProduct(product);
+                            setShowSearchSuggestions(false);
+                          }}
+                          className="w-full px-4 py-2 text-left hover:bg-slate-50 flex items-center justify-between transition-colors cursor-pointer border-b border-slate-50 last:border-b-0"
+                        >
+                          <div className="pr-3">
+                            <div className="text-xs font-bold text-slate-900 line-clamp-1">{product.fullName}</div>
+                            <div className="text-[11px] text-slate-500">{product.brandCategory} • {product.specs.slice(0, 2).join(', ')}</div>
+                          </div>
+                          <div className="text-xs font-extrabold text-[#b91c1c] shrink-0 ml-2">
+                            GH₵ {product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-xs text-slate-500 text-center">
+                        No products found matching "{searchQuery}"
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -199,25 +307,40 @@ export const MainNavbar: React.FC<MainNavbarProps> = ({
               <span className="w-2 h-2 rounded-full bg-[#dc2626] animate-pulse" />
             </button>
             <button
-              onClick={onOpenVendorPortal}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
-              title="Open Vendor Management Hub"
+              onClick={onOpenAdminPortal || onOpenVendorPortal}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
+                isAdmin
+                  ? 'bg-[#073c2c] text-white ring-2 ring-emerald-400'
+                  : 'text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300'
+              }`}
+              title="ApexTech Central Admin Console"
             >
-              <Store className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Vendor Hub</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Admin Portal</span>
+              {isAdmin ? (
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              ) : (
+                <span className="text-[9px] bg-emerald-200/80 text-emerald-900 font-extrabold px-1.5 py-0.2 rounded-full">
+                  Ghana HQ
+                </span>
+              )}
             </button>
           </nav>
 
-          {/* 4. Action Controls: Vendor (mobile), Account, Order Icon, Wishlist Icon, Cart Button */}
+          {/* 4. Action Controls: Admin (mobile), Account, Order Icon, Wishlist Icon, Cart Button */}
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-            {/* Vendor Portal Quick Button (Mobile & Tablet) */}
+            {/* Admin Portal Quick Button (Mobile & Tablet) */}
             <button
-              onClick={onOpenVendorPortal}
-              className="xl:hidden px-2 py-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition-colors cursor-pointer flex items-center gap-1"
-              title="Open Vendor Portal"
+              onClick={onOpenAdminPortal || onOpenVendorPortal}
+              className={`xl:hidden px-2 py-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-black transition-colors cursor-pointer flex items-center gap-1 shrink-0 ${
+                isAdmin
+                  ? 'bg-[#073c2c] text-white ring-1 ring-emerald-400'
+                  : 'text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300'
+              }`}
+              title="Admin Portal"
             >
-              <Store className="w-3.5 h-3.5 text-emerald-700" />
-              <span className="hidden xs:inline">Vendor</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Admin</span>
             </button>
 
             {/* Account Profile Button */}

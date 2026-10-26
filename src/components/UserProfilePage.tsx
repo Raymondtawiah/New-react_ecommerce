@@ -63,6 +63,7 @@ interface UserProfilePageProps {
   onBackToStore: () => void;
   onNavigateOrders: () => void;
   onNavigateWishlist: () => void;
+  onOpenAdminPortal?: () => void;
   ordersCount?: number;
   wishlistCount?: number;
 }
@@ -72,6 +73,7 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
   onBackToStore,
   onNavigateOrders,
   onNavigateWishlist,
+  onOpenAdminPortal,
   ordersCount = 2,
   wishlistCount = 2
 }) => {
@@ -337,6 +339,15 @@ export const UserProfilePage: React.FC<UserProfilePageProps> = ({
             </button>
 
             <div className="flex items-center gap-2">
+              {onOpenAdminPortal && (
+                <button
+                  onClick={onOpenAdminPortal}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-950 bg-emerald-300 hover:bg-emerald-200 px-3 py-1.5 rounded-xl transition-all cursor-pointer shadow-xs"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Admin Console</span>
+                </button>
+              )}
               <span className="text-[11px] font-bold text-emerald-300 bg-emerald-900/60 px-2.5 py-1 rounded-full border border-emerald-700/60 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>Verified Customer Profile</span>
