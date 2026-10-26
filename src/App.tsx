@@ -5,6 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { HeaderTopBar } from './components/HeaderTopBar';
+import { AnnouncementBar } from './components/AnnouncementBar';
 import { MainNavbar } from './components/MainNavbar';
 import { SubNavbar } from './components/SubNavbar';
 import { CategoryHeader } from './components/CategoryHeader';
@@ -406,6 +407,22 @@ export default function App() {
         onOpenHelp={() => setShowroomsOpen(true)}
         onOpenWhatsApp={() => {
           window.open?.('https://wa.me/233503607980', '_blank');
+        }}
+      />
+
+      {/* Animated Announcement Bar on Top of Main Navbar */}
+      <AnnouncementBar
+        onNavigateDeals={() => {
+          setViewMode('storefront');
+          setFilterState((prev) => ({ ...prev, discountedOnly: true }));
+          window.scrollTo({ top: 350, behavior: 'smooth' });
+        }}
+        onOpenShowrooms={() => setShowroomsOpen(true)}
+        onSelectCategory={(cat) => {
+          setActiveTabCategory(cat);
+          setFilterState((prev) => ({ ...prev, selectedCategory: cat, selectedBrand: 'All' }));
+          setCurrentPage(1);
+          if (viewMode !== 'storefront') setViewMode('storefront');
         }}
       />
 

@@ -107,7 +107,7 @@ export const CustomerWishlistPage: React.FC<CustomerWishlistPageProps> = ({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4">
             {wishlistProducts.map((product) => {
               const isAdded = addedItemMap[product.id];
               return (

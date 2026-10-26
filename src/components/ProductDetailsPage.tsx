@@ -730,7 +730,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
               {relatedProducts.map((rel) => (
                 <div
                   key={rel.id}
@@ -738,9 +738,9 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                     onSelectProduct(rel);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="bg-white border border-slate-200 rounded-2xl p-4 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
+                  className="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-2.5 sm:p-4 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
                 >
-                  <div className="w-full h-36 bg-slate-50 rounded-xl flex items-center justify-center p-2 mb-3">
+                  <div className="w-full h-28 sm:h-36 bg-slate-50 rounded-lg sm:rounded-xl flex items-center justify-center p-1.5 sm:p-2 mb-2 sm:mb-3">
                     <TechGraphic
                       category={rel.category}
                       type={rel.graphicType || rel.phoneType || 'phone'}
@@ -751,11 +751,11 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold text-slate-500 uppercase">{rel.brandCategory}</span>
+                    <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase">{rel.brandCategory}</span>
                     <h4 className="text-xs font-black text-slate-900 group-hover:text-[#073c2c] transition-colors line-clamp-1">
                       {rel.name}
                     </h4>
-                    <div className="mt-2 text-sm font-black text-slate-900">
+                    <div className="mt-1 sm:mt-2 text-xs sm:text-sm font-black text-slate-900">
                       GH₵ {rel.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </div>
                   </div>
@@ -764,7 +764,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                       e.stopPropagation();
                       onAddToCart(rel, 1);
                     }}
-                    className="mt-3 w-full bg-slate-100 hover:bg-[#073c2c] hover:text-white text-slate-800 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                    className="mt-2.5 sm:mt-3 w-full bg-slate-100 hover:bg-[#073c2c] hover:text-white text-slate-800 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-colors cursor-pointer"
                   >
                     Add to Cart
                   </button>
